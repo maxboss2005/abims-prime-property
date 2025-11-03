@@ -18,7 +18,7 @@
       }
 
       body {
-      opacity: 0.8;
+      display: none;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         line-height: 1.6;
         color: var(--dark);
@@ -542,4 +542,5 @@
           font-size: 1rem;
         }
       }
+
 
