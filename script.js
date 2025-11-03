@@ -44,7 +44,7 @@
         const whatsappMessage = `New Inquiry from Abims Prime Property Website:%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Property Interest:* ${property}%0A*Message:* ${message}`;
 
         // WhatsApp number
-        const whatsappNumber = "2348064353291";
+        const whatsappNumber = "2347062944139";
 
         // Create WhatsApp URL
         const whatsappURL = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
@@ -98,3 +98,4 @@
           modal.style.display = "none";
         }
       });
+
