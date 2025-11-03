@@ -6,6 +6,7 @@
         --light: #f8f9fa;
         --dark: #2c3e50;
         --gray: #7f8c8d;
+        --purple: #6c3196;
         --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         --transition: all 0.3s ease;
       }
@@ -137,7 +138,7 @@
       .logo-text {
         font-size: 1.5rem;
         font-weight: 700;
-        color: var(--primary);
+        color: var(--purple);
       }
 
       .nav-links {
@@ -541,6 +542,3 @@
           font-size: 1rem;
         }
       }
-
-
-
