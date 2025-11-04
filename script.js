@@ -72,13 +72,14 @@
       const closeModal = document.querySelector(".close-modal");
 
       // Add click event to all property cards
-      document.querySelectorAll(".property-card").forEach((card) => {
-        card.addEventListener("click", function () {
-          const imageSrc = this.getAttribute("data-image");
-          modal.style.display = "block";
-          modalImg.src = imageSrc;
-        });
-      });
+      // Image Modal Functionality - Only for cards without data-video attribute
+document.querySelectorAll('.property-card:not([data-video])').forEach((card) => {
+  card.addEventListener("click", function () {
+    const imageSrc = this.getAttribute("data-image");
+    modal.style.display = "block";
+    modalImg.src = imageSrc;
+  });
+});
 
       // Close modal when clicking the X
       closeModal.addEventListener("click", function () {
@@ -99,3 +100,51 @@
         }
       });
 
+      // Video Modal Functionality
+const videoModal = document.getElementById("videoModal");
+const modalVideo = document.getElementById("modalVideo");
+const closeVideoModal = document.querySelector(".close-video-modal");
+
+// Add click event to video property cards
+document.querySelectorAll('.property-card[data-video]').forEach((card) => {
+  card.addEventListener("click", function (e) {
+    // Don't trigger if clicking the "Inquire Now" button
+    if (e.target.closest('.btn')) {
+      return;
+    }
+    
+    const videoSrc = this.getAttribute("data-video");
+    videoModal.style.display = "block";
+    modalVideo.src = videoSrc;
+    
+    // Play video when modal opens
+    modalVideo.play().catch(e => {
+      console.log("Autoplay prevented:", e);
+    });
+  });
+});
+
+// Close video modal when clicking the X
+closeVideoModal.addEventListener("click", function () {
+  videoModal.style.display = "none";
+  modalVideo.pause();
+  modalVideo.currentTime = 0;
+});
+
+// Close video modal when clicking outside the video
+window.addEventListener("click", function (event) {
+  if (event.target === videoModal) {
+    videoModal.style.display = "none";
+    modalVideo.pause();
+    modalVideo.currentTime = 0;
+  }
+});
+
+// Close video modal with Escape key
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape" && videoModal.style.display === "block") {
+    videoModal.style.display = "none";
+    modalVideo.pause();
+    modalVideo.currentTime = 0;
+  }
+});
