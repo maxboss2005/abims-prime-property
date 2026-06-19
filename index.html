@@ -330,6 +330,36 @@
             flex-shrink: 0;
         }
 
+        .search-bar-wrapper {
+    position: relative;
+}
+
+.search-close-btn {
+    position: absolute;
+    top: -10px;
+    right: -5px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: var(--gray);
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 50%;
+    transition: var(--transition);
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: var(--shadow);
+}
+
+.search-close-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: scale(1.1);
+}
+
+.sticky-search.hidden {
+    display: none !important;
+}
         /* ===== Hero Slider ===== */
         .hero-slider {
             margin-top: 75px;
@@ -1350,6 +1380,10 @@
     <!-- ===== STICKY SEARCH ===== -->
     <div class="sticky-search" id="stickySearch">
         <div class="container">
+            <div class="search-bar-wrapper">
+            <button class="search-close-btn" id="closeSearchBtn" aria-label="Close search bar">
+                <i class="fas fa-times"></i>
+            </button>
             <div class="search-bar">
                 <input type="text" placeholder="Search properties..." id="searchInput" />
                 <select id="propertyType">
@@ -1370,6 +1404,8 @@
             </div>
         </div>
     </div>
+    </div>
+    
 
     <!-- ===== HERO SLIDER ===== -->
     <section class="hero-slider" id="home">
@@ -1708,7 +1744,7 @@
 
             <div class="services-grid" id="servicesGrid">
                 <div class="service-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="service-img" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop');">
+                    <div class="service-img" style="background-image:url('https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=400&h=300&fit=crop');">
                         <span class="service-price-tag">From ₦35,000</span>
                     </div>
                     <div class="service-info">
@@ -1720,7 +1756,7 @@
                 </div>
 
                 <div class="service-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="service-img" style="background-image:url('https://images.unsplash.com/photo-1527515637462-cff94ee5621f?w=400&h=300&fit=crop');">
+                    <div class="service-img" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=300&fit=crop');">
                         <span class="service-price-tag">From ₦50,000</span>
                     </div>
                     <div class="service-info">
@@ -1768,7 +1804,7 @@
                 </div>
 
                 <div class="service-card" data-aos="fade-up" data-aos-delay="600">
-                    <div class="service-img" style="background-image:url('https://images.unsplash.com/photo-1527515637462-cff94ee5621f?w=400&h=300&fit=crop');">
+                    <div class="service-img" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop');">
                         <span class="service-price-tag">From ₦45,000</span>
                     </div>
                     <div class="service-info">
@@ -2124,6 +2160,8 @@
             });
         });
 
+
+
         // ===== HERO SLIDER =====
         let currentSlide = 0;
         const slides = document.querySelectorAll('.hero-slide');
@@ -2174,6 +2212,18 @@
                 stickySearch.classList.remove('visible');
             }
         });
+
+        const closeSearchBtn = document.getElementById('closeSearchBtn');
+
+
+closeSearchBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    stickySearch.classList.add('hidden');
+    // Optionally save preference in localStorage
+    localStorage.setItem('searchBarClosed', 'true');
+});
+
+
 
         // ===== IMAGE MODAL =====
         const imageModal = document.getElementById('imageModal');
