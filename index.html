@@ -1,366 +1,665 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PrimeEstate | Real Estate & Cleaning Services</title>
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>PrimeEstate · Property & Cleaning</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Google Font (Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <style>
+    /* ----- CSS (inlined for single-file perfection) ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f6f8fc;
+      color: #0b1a2e;
+      line-height: 1.5;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    /* colors */
+    :root {
+      --dark: #0b1a2e;
+      --blue: #0f2b4b;
+      --gold: #d4af37;
+      --gold-light: #e8c84a;
+      --green: #1e7e34;
+      --white: #ffffff;
+      --gray-bg: #f0f3f8;
+      --shadow: 0 12px 30px rgba(0,0,0,0.06);
+      --radius: 20px;
+    }
+    /* buttons */
+    .btn {
+      display: inline-block;
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 40px;
+      border: none;
+      background: var(--gold);
+      color: #0b1a2e;
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 14px rgba(212, 175, 55, 0.25);
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .btn:hover {
+      transform: scale(1.03) translateY(-3px);
+      box-shadow: 0 12px 24px rgba(212, 175, 55, 0.4);
+      background: #e0bc4a;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+      box-shadow: none;
+    }
+    .btn-outline:hover {
+      background: var(--gold);
+      color: #0b1a2e;
+      box-shadow: 0 8px 18px rgba(212,175,55,0.3);
+    }
+    .btn-dark {
+      background: var(--blue);
+      color: white;
+      box-shadow: 0 6px 14px rgba(15,43,75,0.3);
+    }
+    .btn-dark:hover {
+      background: #1a3f66;
+    }
+    .section-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      letter-spacing: -0.02em;
+      position: relative;
+      display: inline-block;
+    }
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: var(--gold);
+      border-radius: 4px;
+    }
+    .text-center { text-align: center; }
+    .mt-2 { margin-top: 2rem; }
+    .mb-1 { margin-bottom: 1rem; }
+
+    /* ----- NAVIGATION (sticky) ----- */
+    header {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      border-bottom: 1px solid rgba(0,0,0,0.02);
+    }
+    .header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-icon {
+      background: var(--blue);
+      color: var(--gold);
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+    }
+    .logo-text {
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+      color: var(--blue);
+    }
+    .logo-text span { color: var(--gold); }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+    .nav-menu a {
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: #1f3348;
+      transition: 0.2s;
+      position: relative;
+    }
+    .nav-menu a:after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold);
+      transition: 0.25s;
+    }
+    .nav-menu a:hover:after { width: 100%; }
+    .nav-menu a:hover { color: var(--blue); }
+    .hamburger {
+      display: none;
+      font-size: 1.6rem;
+      cursor: pointer;
+      color: var(--blue);
+    }
+    .search-icon {
+      background: var(--gray-bg);
+      padding: 10px 14px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #3d4f66;
+    }
+    .search-icon i { font-size: 0.9rem; }
+
+    /* ----- HERO + CAROUSEL (auto-sliding) ----- */
+    .hero-section {
+      background: linear-gradient(135deg, #0f2b4b 0%, #1b3f63 100%);
+      padding: 40px 0 50px;
+      color: white;
+      border-radius: 0 0 40px 40px;
+      margin: 0 0 20px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .hero-text h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .hero-text h1 i { color: var(--gold); }
+    .hero-text p {
+      font-size: 1.1rem;
+      opacity: 0.85;
+      margin: 20px 0 28px;
+      max-width: 450px;
+    }
+    .hero-badges {
+      display: flex;
+      gap: 30px;
+      margin-top: 30px;
+    }
+    .hero-badges div { display: flex; align-items: center; gap: 10px; }
+
+    /* carousel */
+    .carousel-wrapper {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 18px 12px 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .carousel {
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      min-height: 220px;
+      background: #1b3f63;
+    }
+    .carousel-slide {
+      display: flex;
+      transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .carousel-item {
+      min-width: 100%;
+      padding: 28px 24px;
+      background: linear-gradient(145deg, #1e4a72, #12304d);
+      color: white;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .carousel-item h3 { font-size: 1.6rem; font-weight: 700; }
+    .carousel-item p { opacity: 0.8; margin: 8px 0 16px; }
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 20px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    .dot.active { background: var(--gold); width: 28px; }
+
+    /* categories */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 16px;
+      margin: 28px 0 10px;
+    }
+    .cat-item {
+      background: white;
+      padding: 16px 8px;
+      border-radius: 20px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow);
+      transition: 0.2s;
+      border: 1px solid transparent;
+    }
+    .cat-item i { display: block; font-size: 1.8rem; margin-bottom: 6px; color: var(--blue); }
+    .cat-item:hover { border-color: var(--gold); transform: translateY(-4px); }
+
+    /* ----- FEATURED PROPERTIES + CLEANING ----- */
+    .section-pad { padding: 60px 0 40px; }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px,1fr));
+      gap: 28px;
+    }
+    .card {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: 0.25s ease;
+      border: 1px solid rgba(0,0,0,0.02);
+    }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.07); }
+    .card-img {
+      height: 190px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .card-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--gold);
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: #0b1a2e;
+    }
+    .card-body { padding: 18px 18px 20px; }
+    .card-body h4 { font-weight: 700; font-size: 1.1rem; }
+    .card-price { color: var(--green); font-weight: 700; font-size: 1.2rem; margin: 6px 0; }
+    .card-location { color: #5a6f85; font-size: 0.9rem; margin-bottom: 10px; }
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #eef2f7;
+      padding-top: 14px;
+      margin-top: 6px;
+    }
+    .rating { color: var(--gold); font-weight: 600; }
+    .book-btn {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 40px;
+      padding: 6px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .book-btn:hover { background: var(--gold); color: #0b1a2e; }
+
+    /* cleaning cards */
+    .cleaning-card .card-img { height: 150px; }
+
+    /* special offer countdown */
+    .offer-section {
+      background: linear-gradient(145deg, #0f2b4b, #1b3f63);
+      color: white;
+      border-radius: 40px;
+      padding: 40px 32px;
+      margin: 30px 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .countdown {
+      display: flex;
+      gap: 20px;
+      font-weight: 700;
+      font-size: 2rem;
+    }
+    .countdown span { background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; }
+    .countdown small { font-size: 0.9rem; font-weight: 400; opacity: 0.7; display: block; }
+
+    /* testimonials */
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+      gap: 24px;
+    }
+    .testimonial {
+      background: white;
+      padding: 24px;
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+    }
+    .testimonial i { color: var(--gold); }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 20px;
+      text-align: center;
+      background: white;
+      padding: 30px 20px;
+      border-radius: 40px;
+      box-shadow: var(--shadow);
+      margin: 40px 0;
+    }
+    .stats-grid h3 { font-size: 2.5rem; color: var(--blue); }
+    .stats-grid p { color: #4f657c; }
+
+    /* whatsapp float */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: #25D366;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      box-shadow: 0 8px 30px rgba(37,211,102,0.4);
+      z-index: 999;
+      transition: 0.2s;
+    }
+    .whatsapp-float:hover { transform: scale(1.08); background: #20b85f; }
+
+    /* newsletter */
+    .newsletter {
+      background: white;
+      border-radius: 40px;
+      padding: 40px 30px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .newsletter-input {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .newsletter-input input {
+      padding: 14px 20px;
+      border-radius: 60px;
+      border: 1px solid #dce2ec;
+      min-width: 260px;
+      font-size: 0.95rem;
+    }
+
+    /* footer */
+    footer {
+      background: #0b1a2e;
+      color: #cfdbe8;
+      padding: 50px 0 20px;
+      margin-top: 50px;
+      border-radius: 40px 40px 0 0;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 30px;
+    }
+    .footer-grid h4 { color: white; margin-bottom: 18px; }
+    .footer-grid a { display: block; margin-bottom: 10px; opacity: 0.7; transition: 0.2s; }
+    .footer-grid a:hover { opacity: 1; color: var(--gold); }
+    .social-icons { display: flex; gap: 14px; margin-top: 16px; }
+    .social-icons a { background: rgba(255,255,255,0.05); width: 40px; height: 40px; border-radius: 40px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .social-icons a:hover { background: var(--gold); color: #0b1a2e; }
+    .copy { text-align: center; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 30px; opacity: 0.5; }
+
+    /* responsive */
+    @media (max-width: 1024px) {
+      .hero-grid { grid-template-columns: 1fr; }
+      .cat-grid { grid-template-columns: repeat(2,1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-menu { display: none; flex-direction: column; background: white; position: absolute; top: 70px; left: 0; width: 100%; padding: 20px; box-shadow: 0 12px 30px rgba(0,0,0,0.05); gap: 16px; }
+      .nav-menu.open { display: flex; }
+      .hamburger { display: block; }
+      .hero-text h1 { font-size: 2rem; }
+      .countdown { font-size: 1.4rem; gap: 8px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .cat-grid { grid-template-columns: 1fr 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <!-- Sticky Navigation -->
-  <header class="navbar">
-    <div class="container nav-container">
-      <div class="logo">
-        <i class="fas fa-building" style="color: #1e3a5f; font-size: 2rem;"></i>
-        <span>PrimeEstate</span>
-        <span class="badge">Premium</span>
+  <!-- Sticky Header -->
+  <header>
+    <div class="container header-flex">
+      <div class="logo-area">
+        <div class="logo-icon"><i class="fas fa-building"></i></div>
+        <div class="logo-text">Prime<span>Estate</span></div>
       </div>
-      <div class="search-bar">
-        <input type="text" placeholder="Search properties, cleaning...">
-        <button><i class="fas fa-search"></i></button>
+      <div class="nav-menu" id="navMenu">
+        <a href="#">Home</a>
+        <a href="#">Properties</a>
+        <a href="#">Cleaning</a>
+        <a href="#">Offers</a>
+        <a href="#">Contact</a>
+        <div class="search-icon"><i class="fas fa-search"></i> <span>Search</span></div>
       </div>
-      <nav class="nav-menu">
-        <ul>
-          <li><a href="#home">Home</a></li>
-          <li><a href="#properties">Properties</a></li>
-          <li><a href="#cleaning">Cleaning</a></li>
-          <li><a href="#testimonials">Testimonials</a></li>
-          <li><a href="#contact" class="btn-outline">Contact</a></li>
-        </ul>
-      </nav>
-      <div class="hamburger">
-        <i class="fas fa-bars"></i>
-      </div>
+      <div class="hamburger" id="hamburger"><i class="fas fa-bars"></i></div>
     </div>
   </header>
 
-  <!-- Hero Section with Auto-sliding Banner -->
-  <section id="home" class="hero">
-    <div class="hero-slider">
-      <div class="slide active" style="background-image: linear-gradient(135deg, rgba(26, 67, 113, 0.85), rgba(30, 58, 95, 0.9)), url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
-        <div class="container hero-content">
-          <h1>Find Your Dream Home & <span class="highlight">Premium Cleaning</span></h1>
-          <p>Explore curated properties and professional cleaning services – all in one trusted marketplace.</p>
-          <div class="hero-buttons">
-            <a href="#properties" class="btn-primary">Explore Properties <i class="fas fa-arrow-right"></i></a>
-            <a href="#cleaning" class="btn-secondary">Book Cleaning <i class="fas fa-sparkles"></i></a>
+  <main>
+    <!-- Hero + Carousel -->
+    <section class="hero-section">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <h1>Smart living, <i>spotless</i> spaces</h1>
+          <p>Find your dream property and book premium cleaning services — all in one trusted marketplace.</p>
+          <div class="hero-badges">
+            <div><i class="fas fa-check-circle" style="color:var(--gold)"></i> 500+ properties</div>
+            <div><i class="fas fa-broom" style="color:var(--gold)"></i> 200+ cleans</div>
+          </div>
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-top: 20px;">
+            <a href="#" class="btn">Explore properties</a>
+            <a href="#" class="btn btn-outline">Book cleaning</a>
           </div>
         </div>
-      </div>
-      <div class="slide" style="background-image: linear-gradient(135deg, rgba(20, 50, 80, 0.85), rgba(10, 40, 70, 0.9)), url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
-        <div class="container hero-content">
-          <h1>Clean Spaces, <span class="highlight">Healthy Lives</span></h1>
-          <p>Expert cleaning services for homes, offices, and post-construction spaces.</p>
-          <div class="hero-buttons">
-            <a href="#cleaning" class="btn-primary">View Services <i class="fas fa-broom"></i></a>
-            <a href="#properties" class="btn-secondary">Browse Properties</a>
-          </div>
-        </div>
-      </div>
-      <div class="slide" style="background-image: linear-gradient(135deg, rgba(10, 40, 70, 0.85), rgba(20, 60, 100, 0.9)), url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');">
-        <div class="container hero-content">
-          <h1>Invest with <span class="highlight">Confidence</span></h1>
-          <p>Premium properties, verified listings, and flexible payment options.</p>
-          <div class="hero-buttons">
-            <a href="#properties" class="btn-primary">View Listings</a>
-            <a href="#contact" class="btn-secondary">Talk to Expert</a>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="slider-controls">
-      <span class="dot active" data-index="0"></span>
-      <span class="dot" data-index="1"></span>
-      <span class="dot" data-index="2"></span>
-    </div>
-  </section>
-
-  <!-- Property Categories & Cleaning Categories (Quick Access) -->
-  <section class="categories-section">
-    <div class="container">
-      <div class="category-grid">
-        <div class="category-card">
-          <i class="fas fa-building"></i>
-          <h4>Apartments</h4>
-        </div>
-        <div class="category-card">
-          <i class="fas fa-home"></i>
-          <h4>Houses</h4>
-        </div>
-        <div class="category-card">
-          <i class="fas fa-store"></i>
-          <h4>Commercial</h4>
-        </div>
-        <div class="category-card">
-          <i class="fas fa-mountain"></i>
-          <h4>Land</h4>
-        </div>
-        <div class="category-card">
-          <i class="fas fa-hand-sparkles"></i>
-          <h4>Home Cleaning</h4>
-        </div>
-        <div class="category-card">
-          <i class="fas fa-briefcase"></i>
-          <h4>Office Cleaning</h4>
-        </div>
-        <div class="category-card">
-          <i class="fas fa-microscope"></i>
-          <h4>Deep Cleaning</h4>
-        </div>
-        <div class="category-card">
-          <i class="fas fa-hammer"></i>
-          <h4>Post-Construction</h4>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Featured Properties -->
-  <section id="properties" class="featured-section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Featured Properties <span class="highlight">of the Week</span></h2>
-        <a href="#" class="view-all">View All <i class="fas fa-chevron-right"></i></a>
-      </div>
-      <div class="property-grid">
-        <div class="property-card">
-          <div class="property-img" style="background-image: url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');">
-            <span class="badge-hot">Hot</span>
-          </div>
-          <div class="property-body">
-            <h3>Luxury Penthouse</h3>
-            <p class="location"><i class="fas fa-map-pin"></i> Banana Island, Lagos</p>
-            <p class="price">₦250,000,000</p>
-            <div class="property-meta">
-              <span><i class="fas fa-bed"></i> 4</span>
-              <span><i class="fas fa-bath"></i> 5</span>
-              <span><i class="fas fa-vector-square"></i> 350m²</span>
+        <div class="carousel-wrapper">
+          <div class="carousel" id="heroCarousel">
+            <div class="carousel-slide" id="carouselSlide">
+              <div class="carousel-item"><h3><i class="fas fa-crown" style="color:var(--gold)"></i> Property of the week</h3><p>Luxury villa with pool · 5 beds · ₦120M</p><span style="background:var(--gold);color:#0b1a2e;padding:4px 12px;border-radius:30px;font-weight:700;align-self:flex-start;">Featured</span></div>
+              <div class="carousel-item"><h3><i class="fas fa-sparkles" style="color:var(--gold)"></i> Deep clean offer</h3><p>20% off first cleaning · use code PRIME20</p><span style="background:var(--gold);color:#0b1a2e;padding:4px 12px;border-radius:30px;font-weight:700;align-self:flex-start;">Limited</span></div>
+              <div class="carousel-item"><h3><i class="fas fa-hand-holding-usd"></i> Zero commission</h3><p>List your property for free · pay only on success</p><span style="background:var(--gold);color:#0b1a2e;padding:4px 12px;border-radius:30px;font-weight:700;align-self:flex-start;">New</span></div>
             </div>
-            <button class="btn-cleaning" onclick="alert('Book cleaning for this property')"><i class="fas fa-sparkles"></i> Book Cleaning</button>
           </div>
-        </div>
-        <div class="property-card">
-          <div class="property-img" style="background-image: url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');">
-            <span class="badge-featured">Featured</span>
-          </div>
-          <div class="property-body">
-            <h3>Modern 3-Bedroom Bungalow</h3>
-            <p class="location"><i class="fas fa-map-pin"></i> Lekki Phase 1</p>
-            <p class="price">₦85,000,000</p>
-            <div class="property-meta">
-              <span><i class="fas fa-bed"></i> 3</span>
-              <span><i class="fas fa-bath"></i> 3</span>
-              <span><i class="fas fa-vector-square"></i> 200m²</span>
-            </div>
-            <button class="btn-cleaning" onclick="alert('Book cleaning for this property')"><i class="fas fa-sparkles"></i> Book Cleaning</button>
-          </div>
-        </div>
-        <div class="property-card">
-          <div class="property-img" style="background-image: url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');">
-            <span class="badge-new">New</span>
-          </div>
-          <div class="property-body">
-            <h3>Commercial Plaza</h3>
-            <p class="location"><i class="fas fa-map-pin"></i> Victoria Island</p>
-            <p class="price">₦1,200,000,000</p>
-            <div class="property-meta">
-              <span><i class="fas fa-store"></i> 12 Units</span>
-              <span><i class="fas fa-parking"></i> 20</span>
-              <span><i class="fas fa-vector-square"></i> 1200m²</span>
-            </div>
-            <button class="btn-cleaning" onclick="alert('Book cleaning for this property')"><i class="fas fa-sparkles"></i> Book Cleaning</button>
-          </div>
-        </div>
-        <div class="property-card">
-          <div class="property-img" style="background-image: url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80');">
-            <span class="badge-hot">Hot</span>
-          </div>
-          <div class="property-body">
-            <h3>Land for Sale</h3>
-            <p class="location"><i class="fas fa-map-pin"></i> Epe, Lagos</p>
-            <p class="price">₦45,000,000</p>
-            <div class="property-meta">
-              <span><i class="fas fa-vector-square"></i> 1000m²</span>
-              <span><i class="fas fa-file-signature"></i> C of O</span>
-            </div>
-            <button class="btn-cleaning" onclick="alert('Book cleaning for this property')"><i class="fas fa-sparkles"></i> Book Cleaning</button>
+          <div class="carousel-dots" id="dotsContainer">
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot" data-index="2"></span>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Featured Cleaning Services -->
-  <section id="cleaning" class="cleaning-section">
+    <!-- Categories -->
+    <div class="container cat-grid">
+      <div class="cat-item"><i class="fas fa-home"></i> Apartments</div>
+      <div class="cat-item"><i class="fas fa-warehouse"></i> Houses</div>
+      <div class="cat-item"><i class="fas fa-store"></i> Commercial</div>
+      <div class="cat-item"><i class="fas fa-mountain"></i> Land</div>
+      <div class="cat-item"><i class="fas fa-broom"></i> Home Cleaning</div>
+      <div class="cat-item"><i class="fas fa-building"></i> Office Cleaning</div>
+      <div class="cat-item"><i class="fas fa-wind"></i> Deep Cleaning</div>
+      <div class="cat-item"><i class="fas fa-hard-hat"></i> Post-Construction</div>
+    </div>
+
+    <!-- Featured Properties -->
+    <section class="container section-pad">
+      <h2 class="section-title">Featured properties</h2>
+      <div class="card-grid">
+        <div class="card"><div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=240&fit=crop');"><span class="card-badge">Just listed</span></div><div class="card-body"><h4>Skyline Penthouse</h4><div class="card-price">₦85M</div><div class="card-location"><i class="fas fa-map-pin"></i> Banana Island</div><div class="card-footer"><span class="rating"><i class="fas fa-star"></i> 4.8</span><button class="book-btn" onclick="alert('Cleaning booking for this property')"><i class="fas fa-broom"></i> Book cleaning</button></div></div></div>
+        <div class="card"><div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=400&h=240&fit=crop');"><span class="card-badge">Hot</span></div><div class="card-body"><h4>Modern 4-Bed Villa</h4><div class="card-price">₦120M</div><div class="card-location"><i class="fas fa-map-pin"></i> Lekki Phase 1</div><div class="card-footer"><span class="rating"><i class="fas fa-star"></i> 4.9</span><button class="book-btn" onclick="alert('Cleaning booking for this property')"><i class="fas fa-broom"></i> Book cleaning</button></div></div></div>
+        <div class="card"><div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=240&fit=crop');"><span class="card-badge">Commercial</span></div><div class="card-body"><h4>Office Complex</h4><div class="card-price">₦250M</div><div class="card-location"><i class="fas fa-map-pin"></i> VI, Lagos</div><div class="card-footer"><span class="rating"><i class="fas fa-star"></i> 4.7</span><button class="book-btn" onclick="alert('Cleaning booking for this property')"><i class="fas fa-broom"></i> Book cleaning</button></div></div></div>
+        <div class="card"><div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=240&fit=crop');"><span class="card-badge">Land</span></div><div class="card-body"><h4>Prime Plot 500sqm</h4><div class="card-price">₦18M</div><div class="card-location"><i class="fas fa-map-pin"></i> Ajah</div><div class="card-footer"><span class="rating"><i class="fas fa-star"></i> 4.6</span><button class="book-btn" onclick="alert('Cleaning booking for this property')"><i class="fas fa-broom"></i> Book cleaning</button></div></div></div>
+      </div>
+    </section>
+
+    <!-- Featured Cleaning Services -->
+    <section class="container section-pad" style="padding-top:0;">
+      <h2 class="section-title">Premium cleaning services</h2>
+      <div class="card-grid">
+        <div class="card cleaning-card"><div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400&h=180&fit=crop');"></div><div class="card-body"><h4>Home cleaning</h4><div class="card-price">₦25k – ₦65k</div><div class="card-location"><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i> 5.0</div><div class="card-footer"><span>⭐ 120+ reviews</span><button class="book-btn" onclick="alert('Book home cleaning')">Book now</button></div></div></div>
+        <div class="card cleaning-card"><div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=400&h=180&fit=crop');"></div><div class="card-body"><h4>Office cleaning</h4><div class="card-price">₦40k – ₦120k</div><div class="card-location"><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i> 4.9</div><div class="card-footer"><span>⭐ 85+ reviews</span><button class="book-btn" onclick="alert('Book office cleaning')">Book now</button></div></div></div>
+        <div class="card cleaning-card"><div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1563298723-dcfebaa392e3?w=400&h=180&fit=crop');"></div><div class="card-body"><h4>Deep cleaning</h4><div class="card-price">₦70k – ₦150k</div><div class="card-location"><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star" style="color:var(--gold);"></i><i class="fas fa-star-half-alt" style="color:var(--gold);"></i> 4.8</div><div class="card-footer"><span>⭐ 200+ reviews</span><button class="book-btn" onclick="alert('Book deep cleaning')">Book now</button></div></div></div>
+      </div>
+    </section>
+
+    <!-- Special Offer + Countdown -->
+    <div class="container offer-section">
+      <div><h3 style="font-size:1.8rem;"><i class="fas fa-gift" style="color:var(--gold);"></i> Limited offer</h3><p>20% off cleaning + free property valuation</p></div>
+      <div class="countdown" id="countdownTimer">
+        <span>02 <small>days</small></span>
+        <span>14 <small>hrs</small></span>
+        <span>38 <small>min</small></span>
+        <span>22 <small>sec</small></span>
+      </div>
+    </div>
+
+    <!-- Testimonials & Stats -->
     <div class="container">
-      <div class="section-header">
-        <h2>Premium <span class="highlight">Cleaning Services</span></h2>
-        <a href="#" class="view-all">All Services <i class="fas fa-chevron-right"></i></a>
-      </div>
-      <div class="cleaning-grid">
-        <div class="cleaning-card">
-          <div class="cleaning-icon"><i class="fas fa-home"></i></div>
-          <h3>Home Cleaning</h3>
-          <div class="rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i> 4.8</div>
-          <p>Thorough cleaning for your living space.</p>
-          <p class="price-tag">From ₦15,000</p>
-          <button class="btn-primary small">Book Now</button>
-        </div>
-        <div class="cleaning-card">
-          <div class="cleaning-icon"><i class="fas fa-briefcase"></i></div>
-          <h3>Office Cleaning</h3>
-          <div class="rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> 5.0</div>
-          <p>Spotless offices for productivity.</p>
-          <p class="price-tag">From ₦30,000</p>
-          <button class="btn-primary small">Book Now</button>
-        </div>
-        <div class="cleaning-card">
-          <div class="cleaning-icon"><i class="fas fa-microscope"></i></div>
-          <h3>Deep Cleaning</h3>
-          <div class="rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i> 4.9</div>
-          <p>Intensive cleaning for every corner.</p>
-          <p class="price-tag">From ₦50,000</p>
-          <button class="btn-primary small">Book Now</button>
-        </div>
-        <div class="cleaning-card">
-          <div class="cleaning-icon"><i class="fas fa-hammer"></i></div>
-          <h3>Post-Construction</h3>
-          <div class="rating"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i> 4.7</div>
-          <p>Remove dust and debris after building.</p>
-          <p class="price-tag">From ₦80,000</p>
-          <button class="btn-primary small">Book Now</button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Special Offers with Countdown Timer -->
-  <section class="offer-section">
-    <div class="container offer-box">
-      <div class="offer-content">
-        <h2><span class="highlight">Special Offer</span> – 20% Off Cleaning</h2>
-        <p>Book any cleaning service this week and get 20% discount. Hurry, limited slots!</p>
-        <div class="countdown">
-          <div class="timer-item"><span id="days">00</span><span>Days</span></div>
-          <div class="timer-item"><span id="hours">00</span><span>Hours</span></div>
-          <div class="timer-item"><span id="minutes">00</span><span>Mins</span></div>
-          <div class="timer-item"><span id="seconds">00</span><span>Secs</span></div>
-        </div>
-        <button class="btn-primary">Claim Offer</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Statistics -->
-  <section class="stats-section">
-    <div class="container stats-grid">
-      <div class="stat-item">
-        <i class="fas fa-home"></i>
-        <span class="stat-number" data-count="320">0</span>
-        <span>Properties Sold</span>
-      </div>
-      <div class="stat-item">
-        <i class="fas fa-users"></i>
-        <span class="stat-number" data-count="850">0</span>
-        <span>Clients Served</span>
-      </div>
-      <div class="stat-item">
-        <i class="fas fa-broom"></i>
-        <span class="stat-number" data-count="1250">0</span>
-        <span>Cleaning Jobs</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Customer Testimonials -->
-  <section id="testimonials" class="testimonials">
-    <div class="container">
-      <h2>What Our Clients Say</h2>
       <div class="testimonial-grid">
-        <div class="testimonial-card">
-          <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p>"PrimeEstate made buying my first home seamless. The cleaning service was also top-notch!"</p>
-          <h4>— Adeola K.</h4>
-        </div>
-        <div class="testimonial-card">
-          <div class="stars">⭐⭐⭐⭐⭐</div>
-          <p>"Professional agents and spotless office cleaning. Highly recommended."</p>
-          <h4>— Chidi E.</h4>
-        </div>
-        <div class="testimonial-card">
-          <div class="stars">⭐⭐⭐⭐</div>
-          <p>"Great property options and the post-construction cleaning was thorough."</p>
-          <h4>— Funmi A.</h4>
-        </div>
+        <div class="testimonial"><i class="fas fa-quote-left" style="font-size:1.6rem;opacity:0.3;"></i><p>“Found a duplex and booked a deep clean in one go. Seamless!”</p><h5>- Chidi O.</h5><span style="color:var(--gold);">★★★★★</span></div>
+        <div class="testimonial"><i class="fas fa-quote-left" style="font-size:1.6rem;opacity:0.3;"></i><p>“The cleaning service was impeccable. My office looks brand new.”</p><h5>- Mrs. Adebayo</h5><span style="color:var(--gold);">★★★★★</span></div>
+        <div class="testimonial"><i class="fas fa-quote-left" style="font-size:1.6rem;opacity:0.3;"></i><p>“Best real estate experience in Lagos. Transparent and fast.”</p><h5>- Kunle S.</h5><span style="color:var(--gold);">★★★★☆</span></div>
+      </div>
+      <div class="stats-grid">
+        <div><h3>1,240+</h3><p>Properties sold</p></div>
+        <div><h3>850+</h3><p>Clients served</p></div>
+        <div><h3>2,100+</h3><p>Cleaning jobs</p></div>
       </div>
     </div>
-  </section>
 
-  <!-- Newsletter & Footer -->
-  <section class="newsletter">
-    <div class="container newsletter-box">
-      <h3>Subscribe to Our Newsletter</h3>
-      <p>Get latest property listings and cleaning offers.</p>
-      <form>
-        <input type="email" placeholder="Your email address">
-        <button type="submit"><i class="fas fa-paper-plane"></i> Subscribe</button>
-      </form>
+    <!-- Newsletter -->
+    <div class="container newsletter">
+      <div><h3 style="font-weight:700;">Get deals & updates</h3><p>Subscribe for property alerts and cleaning promos.</p></div>
+      <div class="newsletter-input">
+        <input type="email" placeholder="Enter your email" />
+        <button class="btn btn-dark">Subscribe</button>
+      </div>
     </div>
-  </section>
+  </main>
 
+  <!-- Footer -->
   <footer>
     <div class="container footer-grid">
-      <div class="footer-col">
-        <h4>PrimeEstate</h4>
-        <p>Your trusted partner for smart real estate and premium cleaning services.</p>
-        <div class="social-icons">
-          <a href="#"><i class="fab fa-facebook-f"></i></a>
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-youtube"></i></a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="#properties">Properties</a></li>
-          <li><a href="#cleaning">Cleaning</a></li>
-          <li><a href="#testimonials">Testimonials</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Services</h4>
-        <ul>
-          <li>Property Sales</li>
-          <li>Land Acquisition</li>
-          <li>Home Cleaning</li>
-          <li>Office Cleaning</li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Contact</h4>
-        <ul>
-          <li><i class="fas fa-phone"></i> +234 80 7240 3286</li>
-          <li><i class="fas fa-envelope"></i> info@primeestate.com</li>
-          <li><i class="fas fa-map-marker-alt"></i> Lagos, Nigeria</li>
-        </ul>
-      </div>
+      <div><h4>PrimeEstate</h4><p style="opacity:0.6;max-width:280px;">Your premium marketplace for property and professional cleaning services.</p><div class="social-icons"><a href="#"><i class="fab fa-facebook-f"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-x-twitter"></i></a><a href="#"><i class="fab fa-youtube"></i></a></div></div>
+      <div><h4>Properties</h4><a href="#">Apartments</a><a href="#">Houses</a><a href="#">Commercial</a><a href="#">Land</a></div>
+      <div><h4>Cleaning</h4><a href="#">Home</a><a href="#">Office</a><a href="#">Deep clean</a><a href="#">Post-construction</a></div>
+      <div><h4>Contact</h4><a href="#"><i class="fas fa-phone"></i> +234 800 123 4567</a><a href="#"><i class="fas fa-envelope"></i> hello@primeestate.ng</a><a href="#"><i class="fas fa-map-pin"></i> Lagos, Nigeria</a></div>
     </div>
-    <div class="container footer-bottom">
-      <p>&copy; 2025 PrimeEstate. All rights reserved.</p>
-    </div>
+    <div class="container copy">© 2026 PrimeEstate · All rights reserved</div>
   </footer>
 
-  <!-- Floating WhatsApp Button -->
-  <a href="https://wa.me/2347062944139" class="whatsapp-float" target="_blank">
-    <i class="fab fa-whatsapp"></i>
-  </a>
+  <!-- WhatsApp Float -->
+  <a href="https://wa.me/2348001234567" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
 
-  <script src="script.js"></script>
+  <!-- JavaScript -->
+  <script>
+    (function(){
+      // Hamburger
+      const hamburger = document.getElementById('hamburger');
+      const navMenu = document.getElementById('navMenu');
+      hamburger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navMenu.classList.toggle('open');
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.header-flex')) navMenu.classList.remove('open');
+      });
+
+      // Carousel auto-slide
+      const slide = document.getElementById('carouselSlide');
+      const dots = document.querySelectorAll('.dot');
+      let current = 0;
+      const total = 3;
+
+      function goTo(index) {
+        if (index < 0) index = total-1;
+        if (index >= total) index = 0;
+        current = index;
+        slide.style.transform = `translateX(-${current * 100}%)`;
+        dots.forEach((d,i) => d.classList.toggle('active', i === current));
+      }
+      dots.forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.index))));
+      setInterval(() => goTo(current+1), 4500);
+
+      // Countdown timer (fixed demo)
+      const timerEl = document.getElementById('countdownTimer');
+      let sec = 86400; // 24h demo
+      setInterval(() => {
+        sec--;
+        if (sec < 0) sec = 86400;
+        const d = Math.floor(sec / 86400);
+        const h = Math.floor((sec % 86400) / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        timerEl.innerHTML = `<span>${String(d).padStart(2,'0')}<small>days</small></span><span>${String(h).padStart(2,'0')}<small>hrs</small></span><span>${String(m).padStart(2,'0')}<small>min</small></span><span>${String(s).padStart(2,'0')}<small>sec</small></span>`;
+      }, 1000);
+
+      // extra micro-interaction: card hover glint (no-op)
+    })();
+  </script>
 </body>
 </html>
