@@ -1,150 +1,174 @@
-// Mobile Menu Toggle
-      const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
-      const navLinks = document.querySelector(".nav-links");
+// script.js
 
-      mobileMenuBtn.addEventListener("click", () => {
-        navLinks.classList.toggle("active");
-      });
+// ===== MOBILE MENU TOGGLE =====
+const hamburger = document.querySelector('.hamburger');
+const navMenu = document.querySelector('.nav-menu');
 
-      // Smooth Scrolling for Anchor Links
-      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-        anchor.addEventListener("click", function (e) {
-          e.preventDefault();
+hamburger.addEventListener('click', () => {
+  navMenu.classList.toggle('active');
+});
 
-          const targetId = this.getAttribute("href");
-          if (targetId === "#") return;
+// ===== HERO SLIDER =====
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+let currentSlide = 0;
+let slideInterval;
 
-          const targetElement = document.querySelector(targetId);
-          if (targetElement) {
-            window.scrollTo({
-              top: targetElement.offsetTop - 80,
-              behavior: "smooth",
-            });
+function goToSlide(index) {
+  slides.forEach((slide, i) => {
+    slide.classList.toggle('active', i === index);
+  });
+  dots.forEach((dot, i) => {
+    dot.classList.toggle('active', i === index);
+  });
+  currentSlide = index;
+}
 
-            // Close mobile menu if open
-            navLinks.classList.remove("active");
-          }
-        });
-      });
+function nextSlide() {
+  const next = (currentSlide + 1) % slides.length;
+  goToSlide(next);
+}
 
-      // WhatsApp Form Submission
-      const contactForm = document.getElementById("contactForm");
+function startSlider() {
+  slideInterval = setInterval(nextSlide, 5000);
+}
 
-      contactForm.addEventListener("submit", function (e) {
-        e.preventDefault();
+function resetSlider() {
+  clearInterval(slideInterval);
+  startSlider();
+}
 
-        // Get form values
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const phone = document.getElementById("phone").value;
-        const property = document.getElementById("property").value;
-        const message = document.getElementById("message").value;
-
-        // Format message for WhatsApp
-        const whatsappMessage = `New Inquiry from Abims Prime Property Website:%0A%0A*Name:* ${name}%0A*Email:* ${email}%0A*Phone:* ${phone}%0A*Property Interest:* ${property}%0A*Message:* ${message}`;
-
-        // WhatsApp number
-        const whatsappNumber = "2347062944139";
-
-        // Create WhatsApp URL
-        const whatsappURL = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
-
-        // Open WhatsApp in new tab
-        window.open(whatsappURL, "_blank");
-
-        // Reset the form
-        contactForm.reset();
-      });
-
-      // Add scroll effect to header
-      window.addEventListener("scroll", () => {
-        const header = document.querySelector("header");
-        if (window.scrollY > 100) {
-          header.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.1)";
-        } else {
-          header.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
-        }
-      });
-
-      // Image Modal Functionality
-      const modal = document.getElementById("imageModal");
-      const modalImg = document.getElementById("modalImage");
-      const closeModal = document.querySelector(".close-modal");
-
-      // Add click event to all property cards
-      // Image Modal Functionality - Only for cards without data-video attribute
-document.querySelectorAll('.property-card:not([data-video])').forEach((card) => {
-  card.addEventListener("click", function () {
-    const imageSrc = this.getAttribute("data-image");
-    modal.style.display = "block";
-    modalImg.src = imageSrc;
+dots.forEach((dot, index) => {
+  dot.addEventListener('click', () => {
+    goToSlide(index);
+    resetSlider();
   });
 });
 
-      // Close modal when clicking the X
-      closeModal.addEventListener("click", function () {
-        modal.style.display = "none";
-      });
+// Start auto-sliding
+startSlider();
 
-      // Close modal when clicking outside the image
-      window.addEventListener("click", function (event) {
-        if (event.target === modal) {
-          modal.style.display = "none";
-        }
-      });
+// ===== COUNTDOWN TIMER (7 days from now) =====
+function initCountdown() {
+  const targetDate = new Date();
+  targetDate.setDate(targetDate.getDate() + 7);
+  targetDate.setHours(23, 59, 59, 999);
 
-      // Close modal with Escape key
-      document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-          modal.style.display = "none";
-        }
-      });
+  function updateTimer() {
+    const now = new Date();
+    const diff = targetDate - now;
 
-      // Video Modal Functionality
-const videoModal = document.getElementById("videoModal");
-const modalVideo = document.getElementById("modalVideo");
-const closeVideoModal = document.querySelector(".close-video-modal");
-
-// Add click event to video property cards
-document.querySelectorAll('.property-card[data-video]').forEach((card) => {
-  card.addEventListener("click", function (e) {
-    // Don't trigger if clicking the "Inquire Now" button
-    if (e.target.closest('.btn')) {
+    if (diff <= 0) {
+      document.getElementById('days').textContent = '00';
+      document.getElementById('hours').textContent = '00';
+      document.getElementById('minutes').textContent = '00';
+      document.getElementById('seconds').textContent = '00';
       return;
     }
-    
-    const videoSrc = this.getAttribute("data-video");
-    videoModal.style.display = "block";
-    modalVideo.src = videoSrc;
-    
-    // Play video when modal opens
-    modalVideo.play().catch(e => {
-      console.log("Autoplay prevented:", e);
-    });
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    document.getElementById('days').textContent = String(days).padStart(2, '0');
+    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+}
+
+initCountdown();
+
+// ===== STATISTICS COUNTER ANIMATION =====
+const statNumbers = document.querySelectorAll('.stat-number');
+
+function animateStats() {
+  statNumbers.forEach(stat => {
+    const target = parseInt(stat.getAttribute('data-count'), 10);
+    const increment = Math.ceil(target / 60);
+    let current = 0;
+
+    const updateCounter = () => {
+      current += increment;
+      if (current >= target) {
+        stat.textContent = target.toLocaleString();
+        return;
+      }
+      stat.textContent = current.toLocaleString();
+      requestAnimationFrame(updateCounter);
+    };
+
+    // Start counter when element is visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          updateCounter();
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    observer.observe(stat);
+  });
+}
+
+animateStats();
+
+// ===== SMOOTH SCROLL FOR ANCHOR LINKS =====
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function(e) {
+    const targetId = this.getAttribute('href');
+    if (targetId === '#') return;
+    const targetElement = document.querySelector(targetId);
+    if (targetElement) {
+      e.preventDefault();
+      const offsetTop = targetElement.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      // Close mobile menu if open
+      navMenu.classList.remove('active');
+    }
   });
 });
 
-// Close video modal when clicking the X
-closeVideoModal.addEventListener("click", function () {
-  videoModal.style.display = "none";
-  modalVideo.pause();
-  modalVideo.currentTime = 0;
+// ===== NEWSLETTER SUBSCRIPTION (demo) =====
+const newsletterForm = document.querySelector('.newsletter-box form');
+if (newsletterForm) {
+  newsletterForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = this.querySelector('input');
+    if (input.value.trim()) {
+      alert(`✅ Thanks for subscribing! (${input.value})`);
+      input.value = '';
+    } else {
+      alert('Please enter a valid email address.');
+    }
+  });
+}
+
+// ===== BOOK CLEANING BUTTON (already uses inline alert) =====
+// Additional enhancement: log clicks for analytics
+document.querySelectorAll('.btn-cleaning').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    // The inline onclick already handles the alert.
+    // We just prevent duplicate alerts if needed – but keep as is.
+    // If you want to remove inline onclick and use this, uncomment:
+    // e.stopPropagation();
+    // alert('Book cleaning for this property');
+  });
 });
 
-// Close video modal when clicking outside the video
-window.addEventListener("click", function (event) {
-  if (event.target === videoModal) {
-    videoModal.style.display = "none";
-    modalVideo.pause();
-    modalVideo.currentTime = 0;
+// ===== CLOSE MOBILE MENU ON RESIZE =====
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) {
+    navMenu.classList.remove('active');
   }
 });
 
-// Close video modal with Escape key
-document.addEventListener("keydown", function (event) {
-  if (event.key === "Escape" && videoModal.style.display === "block") {
-    videoModal.style.display = "none";
-    modalVideo.pause();
-    modalVideo.currentTime = 0;
-  }
-});
+console.log('PrimeEstate — premium real estate & cleaning marketplace loaded.');
