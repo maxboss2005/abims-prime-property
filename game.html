@@ -1,0 +1,2363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>⚔️ ShadowQuest RPG</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0d0b0a;
+            font-family: 'Open Sans', sans-serif;
+            color: #eee;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+            touch-action: none;
+        }
+        /* ===== GAME WRAPPER ===== */
+        #game-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1513;
+            overflow: hidden;
+        }
+        /* ===== CANVAS ===== */
+        #game-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #2d241f;
+            image-rendering: pixelated;
+        }
+        /* ===== UI OVERLAY ===== */
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #ui-overlay>* {
+            pointer-events: auto;
+        }
+
+        /* ===== TOP HUD ===== */
+        #top-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px 14px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, transparent 100%);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .hud-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 200px;
+        }
+        .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .hud-bar-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+        .hud-bar-wrap .label {
+            min-width: 32px;
+            color: #ccc;
+        }
+        .hud-bar {
+            width: 140px;
+            height: 14px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+        }
+        .hud-bar .fill {
+            height: 100%;
+            border-radius: 7px;
+            transition: width 0.3s ease;
+        }
+        .hud-bar .fill.hp {
+            background: linear-gradient(90deg, #c0392b, #e74c3c);
+        }
+        .hud-bar .fill.mp {
+            background: linear-gradient(90deg, #2471a3, #3498db);
+        }
+        .hud-bar .fill.xp {
+            background: linear-gradient(90deg, #7d3c98, #af7ac5);
+        }
+        .hud-bar .bar-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 9px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+            white-space: nowrap;
+        }
+        .hud-gold {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f1c40f;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .hud-level {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e67e22;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+            padding: 2px 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(231, 126, 34, 0.3);
+        }
+        .hud-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #eee;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            pointer-events: auto;
+        }
+        .hud-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        .hud-btn.primary {
+            background: #8e44ad;
+            border-color: #9b59b6;
+        }
+        .hud-btn.primary:hover {
+            background: #9b59b6;
+        }
+
+        /* ===== MINIMAP ===== */
+        #minimap {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 140px;
+            height: 140px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            background: rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            z-index: 15;
+            pointer-events: auto;
+        }
+        #minimap canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ===== TOUCH CONTROLS ===== */
+        #touch-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 25;
+            display: none;
+            gap: 6px;
+            pointer-events: none;
+        }
+        #touch-controls .dpad {
+            display: grid;
+            grid-template-columns: 56px 56px 56px;
+            grid-template-rows: 56px 56px 56px;
+            gap: 4px;
+            pointer-events: auto;
+        }
+        #touch-controls .dpad-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.1s;
+            backdrop-filter: blur(4px);
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #touch-controls .dpad-btn:active,
+        #touch-controls .dpad-btn.active {
+            background: rgba(255, 255, 255, 0.35);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        #touch-controls .dpad-btn.empty {
+            background: transparent;
+            border: none;
+            pointer-events: none;
+        }
+
+        /* ===== MODALS ===== */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            animation: fadeIn 0.25s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: linear-gradient(145deg, #2c241f, #1a1513);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px 28px;
+            max-width: 560px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            animation: slideUp 0.3s ease;
+            pointer-events: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+        .modal-header h2 {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 24px;
+            color: #e8d5b5;
+            letter-spacing: 1px;
+        }
+        .modal-close {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            color: #aaa;
+            font-size: 22px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
+        }
+
+        /* ===== INVENTORY ===== */
+        .inv-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin: 12px 0;
+        }
+        .inv-slot {
+            aspect-ratio: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            min-height: 60px;
+        }
+        .inv-slot:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .inv-slot.has-item {
+            border-color: rgba(255, 215, 0, 0.2);
+        }
+        .inv-slot .item-icon {
+            font-size: 24px;
+            line-height: 1;
+        }
+        .inv-slot .item-name {
+            font-size: 8px;
+            color: #ccc;
+            text-align: center;
+            line-height: 1.2;
+            margin-top: 2px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .inv-slot .item-rarity {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 8px;
+            font-weight: 700;
+        }
+        .inv-slot .item-rarity.common {
+            color: #aaa;
+        }
+        .inv-slot .item-rarity.uncommon {
+            color: #2ecc71;
+        }
+        .inv-slot .item-rarity.rare {
+            color: #3498db;
+        }
+        .inv-slot .item-rarity.epic {
+            color: #9b59b6;
+        }
+        .inv-slot .item-rarity.legendary {
+            color: #f39c12;
+        }
+        .inv-slot .equip-badge {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 7px;
+            background: #8e44ad;
+            color: #fff;
+            padding: 0 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* ===== NPC DIALOGUE ===== */
+        .dialogue-box {
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 8px 0;
+        }
+        .dialogue-box .speaker {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 18px;
+            color: #f1c40f;
+            margin-bottom: 6px;
+        }
+        .dialogue-box .text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #eee;
+        }
+        .dialogue-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 12px;
+        }
+        .dialogue-options button {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #ddd;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            font-weight: 600;
+        }
+        .dialogue-options button:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 215, 0, 0.3);
+            color: #fff;
+        }
+        .dialogue-options button.quest {
+            border-left: 3px solid #f1c40f;
+        }
+        .dialogue-options button.shop {
+            border-left: 3px solid #2ecc71;
+        }
+
+        /* ===== SHOP ===== */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        .shop-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .shop-item:hover {
+            border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .shop-item .icon {
+            font-size: 28px;
+        }
+        .shop-item .name {
+            font-size: 12px;
+            font-weight: 600;
+            margin: 4px 0;
+        }
+        .shop-item .price {
+            font-size: 12px;
+            color: #f1c40f;
+        }
+        .shop-item .price.sell {
+            color: #2ecc71;
+        }
+
+        /* ===== QUEST LOG ===== */
+        .quest-entry {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-left: 3px solid #f1c40f;
+        }
+        .quest-entry .qtitle {
+            font-weight: 700;
+            font-size: 15px;
+            color: #e8d5b5;
+        }
+        .quest-entry .qdesc {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+        .quest-entry .qstatus {
+            font-size: 11px;
+            color: #2ecc71;
+            font-weight: 600;
+        }
+        .quest-entry .qstatus.complete {
+            color: #f1c40f;
+        }
+
+        /* ===== CHARACTER STATS ===== */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
+            margin: 10px 0;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .stat-row .label {
+            color: #aaa;
+        }
+        .stat-row .value {
+            color: #eee;
+            font-weight: 600;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        .modal::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        .modal::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 3px;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            #top-hud {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            .hud-bar {
+                width: 80px;
+                height: 12px;
+            }
+            .hud-left {
+                min-width: unset;
+            }
+            .hud-gold {
+                font-size: 13px;
+            }
+            .hud-level {
+                font-size: 12px;
+                padding: 1px 8px;
+            }
+            .hud-btn {
+                font-size: 11px;
+                padding: 3px 8px;
+            }
+            #minimap {
+                width: 80px;
+                height: 80px;
+                bottom: 10px;
+                right: 10px;
+                border-radius: 8px;
+            }
+            #touch-controls {
+                display: block !important;
+                bottom: 16px;
+                left: 16px;
+            }
+            #touch-controls .dpad {
+                grid-template-columns: 44px 44px 44px;
+                grid-template-rows: 44px 44px 44px;
+                gap: 3px;
+            }
+            #touch-controls .dpad-btn {
+                font-size: 16px;
+                border-radius: 8px;
+            }
+            .modal {
+                padding: 16px 18px;
+                max-width: 98%;
+                max-height: 90vh;
+            }
+            .modal-header h2 {
+                font-size: 20px;
+            }
+            .inv-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .shop-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (pointer: coarse) {
+            #touch-controls {
+                display: block !important;
+            }
+        }
+        @media (pointer: fine) {
+            #touch-controls {
+                display: none !important;
+            }
+        }
+
+        /* ===== UTILITY ===== */
+        .text-gold {
+            color: #f1c40f;
+        }
+        .text-green {
+            color: #2ecc71;
+        }
+        .text-red {
+            color: #e74c3c;
+        }
+        .text-blue {
+            color: #3498db;
+        }
+        .text-purple {
+            color: #9b59b6;
+        }
+        .mt-8 {
+            margin-top: 8px;
+        }
+        .mb-8 {
+            margin-bottom: 8px;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .gap-8 {
+            gap: 8px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.06);
+            color: #eee;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-sm:hover {
+            background: rgba(255, 255, 255, 0.14);
+        }
+        .btn-sm.danger {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        .btn-sm.danger:hover {
+            background: rgba(231, 76, 60, 0.2);
+        }
+        .btn-sm.success {
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+        .btn-sm.success:hover {
+            background: rgba(46, 204, 113, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-wrapper">
+        <!-- Canvas -->
+        <canvas id="game-canvas"></canvas>
+
+        <!-- UI Overlay -->
+        <div id="ui-overlay">
+
+            <!-- TOP HUD -->
+            <div id="top-hud">
+                <div class="hud-left">
+                    <div class="hud-bar-wrap">
+                        <span class="label">HP</span>
+                        <div class="hud-bar"><div class="fill hp" id="hp-bar" style="width:100%"></div><span class="bar-text" id="hp-text">100/100</span></div>
+                    </div>
+                    <div class="hud-bar-wrap">
+                        <span class="label">MP</span>
+                        <div class="hud-bar"><div class="fill mp" id="mp-bar" style="width:100%"></div><span class="bar-text" id="mp-text">50/50</span></div>
+                    </div>
+                    <div class="hud-bar-wrap">
+                        <span class="label">XP</span>
+                        <div class="hud-bar"><div class="fill xp" id="xp-bar" style="width:0%"></div><span class="bar-text" id="xp-text">0 / 100</span></div>
+                    </div>
+                </div>
+                <div class="hud-right">
+                    <span class="hud-level" id="hud-level">Lv.1</span>
+                    <span class="hud-gold">🪙 <span id="hud-gold">0</span></span>
+                    <button class="hud-btn" id="btn-inventory">🎒</button>
+                    <button class="hud-btn" id="btn-quests">📜</button>
+                    <button class="hud-btn" id="btn-stats">⚔️</button>
+                    <button class="hud-btn primary" id="btn-save">💾</button>
+                </div>
+            </div>
+
+            <!-- MINIMAP -->
+            <div id="minimap"><canvas id="minimap-canvas"></canvas></div>
+
+            <!-- TOUCH CONTROLS -->
+            <div id="touch-controls">
+                <div class="dpad">
+                    <div class="dpad-btn empty"></div>
+                    <div class="dpad-btn" data-dir="up">▲</div>
+                    <div class="dpad-btn empty"></div>
+                    <div class="dpad-btn" data-dir="left">◄</div>
+                    <div class="dpad-btn" data-dir="down">▼</div>
+                    <div class="dpad-btn" data-dir="right">►</div>
+                </div>
+            </div>
+
+            <!-- ===== MODALS ===== -->
+
+            <!-- INVENTORY -->
+            <div class="modal-overlay" id="modal-inventory">
+                <div class="modal">
+                    <div class="modal-header"><h2>🎒 Inventory</h2><button class="modal-close" data-close="modal-inventory">✕</button></div>
+                    <div class="flex-between mb-8"><span>Gold: <span class="text-gold" id="inv-gold">0</span></span><span>Slots: <span id="inv-count">0</span>/20</span></div>
+                    <div class="inv-grid" id="inv-grid"></div>
+                    <div class="mt-8 text-center" id="inv-tooltip" style="font-size:13px;color:#aaa;min-height:20px;">Click an item to equip or use</div>
+                </div>
+            </div>
+
+            <!-- QUESTS -->
+            <div class="modal-overlay" id="modal-quests">
+                <div class="modal">
+                    <div class="modal-header"><h2>📜 Quest Log</h2><button class="modal-close" data-close="modal-quests">✕</button></div>
+                    <div id="quest-list"></div>
+                </div>
+            </div>
+
+            <!-- STATS -->
+            <div class="modal-overlay" id="modal-stats">
+                <div class="modal">
+                    <div class="modal-header"><h2>⚔️ Character</h2><button class="modal-close" data-close="modal-stats">✕</button></div>
+                    <div class="stat-grid" id="stat-grid"></div>
+                </div>
+            </div>
+
+            <!-- NPC DIALOGUE -->
+            <div class="modal-overlay" id="modal-dialogue">
+                <div class="modal">
+                    <div class="modal-header"><h2 id="dialogue-speaker">💬 NPC</h2><button class="modal-close" data-close="modal-dialogue">✕</button></div>
+                    <div class="dialogue-box"><div class="text" id="dialogue-text">Hello, traveler...</div></div>
+                    <div class="dialogue-options" id="dialogue-options"></div>
+                </div>
+            </div>
+
+            <!-- SHOP -->
+            <div class="modal-overlay" id="modal-shop">
+                <div class="modal">
+                    <div class="modal-header"><h2>🏪 Shop</h2><button class="modal-close" data-close="modal-shop">✕</button></div>
+                    <div class="flex-between mb-8"><span>Your Gold: <span class="text-gold" id="shop-gold">0</span></span><span class="text-sm" style="color:#888;">Click to buy</span></div>
+                    <div class="shop-grid" id="shop-grid"></div>
+                    <div class="mt-8"><button class="btn-sm success w-full" id="btn-shop-sell">Sell Items (click an item in inventory to sell)</button></div>
+                </div>
+            </div>
+
+            <!-- PAUSE / SAVE NOTIFICATION -->
+            <div class="modal-overlay" id="modal-pause">
+                <div class="modal" style="max-width:400px;text-align:center;">
+                    <div class="modal-header"><h2>⏸️ Paused</h2><button class="modal-close" data-close="modal-pause">✕</button></div>
+                    <p style="color:#aaa;margin:12px 0;">Game saved automatically.</p>
+                    <button class="hud-btn primary" data-close="modal-pause" style="padding:10px 30px;font-size:16px;">Resume</button>
+                </div>
+            </div>
+
+        </div><!-- /ui-overlay -->
+    </div><!-- /game-wrapper -->
+
+    <script>
+        // ========================================================================
+        //  SHADOWQUEST RPG — Full Game Engine
+        //  All game logic runs client-side; Flask backend handles save/load.
+        // ========================================================================
+
+        // ---- CONSTANTS ----
+        const TILE_SIZE = 32;
+        const WORLD_W = 60;
+        const WORLD_H = 60;
+
+        // Tile types
+        const T = {
+            GRASS: 0,
+            DIRT: 1,
+            WATER: 2,
+            WALL: 3,
+            TREE: 4,
+            HOUSE: 5,
+            STONE: 6,
+            PATH: 7,
+            BRIDGE: 8,
+            CASTLE_FLOOR: 9,
+            DUNGEON_FLOOR: 10,
+            VILLAGE_FLOOR: 11,
+        };
+
+        // ---- GAME STATE ----
+        const game = {
+            player: {
+                x: 30,
+                y: 30,
+                dir: 0, // 0=down,1=up,2=left,3=right
+                moving: false,
+                attacking: false,
+                hurt: false,
+                hp: 100,
+                maxHp: 100,
+                mp: 50,
+                maxMp: 50,
+                xp: 0,
+                maxXp: 100,
+                level: 1,
+                gold: 0,
+                attack: 8,
+                defense: 3,
+                speed: 120, // ms per tile
+                inventory: [],
+                maxInventory: 20,
+                equipped: { weapon: null, armor: null, accessory: null },
+                quests: [],
+                completedQuests: [],
+                location: 'village',
+            },
+            enemies: [],
+            npcs: [],
+            questLog: [],
+            shopItems: [],
+            map: [],
+            camera: { x: 0, y: 0 },
+            keys: {},
+            touchDir: null,
+            combatCooldown: 0,
+            damageFlash: 0,
+            saveTimer: 0,
+            autoSaveInterval: 30, // seconds
+            running: true,
+            dayTime: 0, // 0-1
+            weather: 0, // 0=clear,1=rain
+        };
+
+        // ---- DOM REFS ----
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const miniCanvas = document.getElementById('minimap-canvas');
+        const miniCtx = miniCanvas.getContext('2d');
+
+        // ---- UTILITY ----
+        function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+        function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+        function randf(min, max) { return Math.random() * (max - min) + min; }
+
+        function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        // ---- MAP GENERATION ----
+        function generateWorld() {
+            const map = [];
+            for (let y = 0; y < WORLD_H; y++) {
+                map[y] = [];
+                for (let x = 0; x < WORLD_W; x++) {
+                    map[y][x] = T.GRASS;
+                }
+            }
+
+            // Village (center)
+            for (let y = 25; y < 35; y++) {
+                for (let x = 25; x < 35; x++) {
+                    map[y][x] = T.VILLAGE_FLOOR;
+                }
+            }
+            // Village buildings
+            for (let y = 27; y < 30; y++) {
+                for (let x = 27; x < 30; x++) map[y][x] = T.HOUSE;
+            }
+            for (let y = 27; y < 30; y++) {
+                for (let x = 31; x < 34; x++) map[y][x] = T.HOUSE;
+            }
+            for (let y = 31; y < 34; y++) {
+                for (let x = 27; x < 30; x++) map[y][x] = T.HOUSE;
+            }
+            // Village paths
+            for (let i = 25; i < 35; i++) { map[25][i] = T.PATH;
+                map[34][i] = T.PATH;
+                map[i][25] = T.PATH;
+                map[i][34] = T.PATH; }
+
+            // Forest (top-left)
+            for (let y = 2; y < 20; y++) {
+                for (let x = 2; x < 20; x++) {
+                    if (Math.random() < 0.3) map[y][x] = T.TREE;
+                    else if (Math.random() < 0.15) map[y][x] = T.GRASS;
+                }
+            }
+            // Forest paths
+            for (let i = 2; i < 20; i++) { map[10][i] = T.PATH;
+                map[i][10] = T.PATH; }
+
+            // Dungeon (bottom-right)
+            for (let y = 42; y < 56; y++) {
+                for (let x = 42; x < 56; x++) {
+                    map[y][x] = T.DUNGEON_FLOOR;
+                    if (Math.random() < 0.2) map[y][x] = T.WALL;
+                }
+            }
+            // Dungeon walls
+            for (let i = 42; i < 56; i++) { map[42][i] = T.WALL;
+                map[55][i] = T.WALL;
+                map[i][42] = T.WALL;
+                map[i][55] = T.WALL; }
+
+            // Castle (top-right)
+            for (let y = 2; y < 16; y++) {
+                for (let x = 44; x < 58; x++) {
+                    map[y][x] = T.CASTLE_FLOOR;
+                    if (Math.random() < 0.15) map[y][x] = T.WALL;
+                }
+            }
+            for (let i = 2; i < 16; i++) { map[i][44] = T.WALL;
+                map[i][57] = T.WALL;
+                map[2][i + 44] = T.WALL;
+                map[15][i + 44] = T.WALL; }
+
+            // Water features
+            for (let y = 35; y < 42; y++) {
+                for (let x = 2; x < 12; x++) {
+                    if (Math.random() < 0.6) map[y][x] = T.WATER;
+                }
+            }
+
+            // Bridges
+            map[38][6] = T.BRIDGE;
+            map[38][7] = T.BRIDGE;
+            map[39][6] = T.BRIDGE;
+            map[39][7] = T.BRIDGE;
+
+            // Roads connecting zones
+            for (let i = 20; i < 25; i++) { map[i][20] = T.PATH;
+                map[20][i] = T.PATH; }
+            for (let i = 35; i < 42; i++) { map[i][35] = T.PATH;
+                map[35][i] = T.PATH; }
+            for (let i = 35; i < 42; i++) { map[i][40] = T.PATH;
+                map[40][i] = T.PATH; }
+
+            return map;
+        }
+
+        // ---- NPC DEFINITIONS ----
+        function createNPCs() {
+            return [
+                { id: 'elder', x: 28, y: 28, name: 'Elder Aldric', color: '#8e7a5a', dialogue: [
+                        'Welcome, young adventurer!',
+                        'Our village has been plagued by monsters from the dungeon.',
+                        'Please, venture into the dungeon and defeat the Goblin King!',
+                        'I will reward you handsomely.'
+                    ], quest: { id: 'main_1', title: 'The Goblin King', desc: 'Defeat the Goblin King in the dungeon.',
+                        reward: { gold: 100, xp: 150 }, objective: 'defeat_goblin_king', progress: 0, completed: false } },
+                { id: 'merchant', x: 32, y: 28, name: 'Merchant Tilda', color: '#6a8e6a', dialogue: [
+                        'Hello there! I have the finest wares in the land.',
+                        'Take a look at my shop when you need supplies.'
+                    ], shop: true },
+                { id: 'guard', x: 26, y: 32, name: 'Guard Marcus', color: '#6a7a8e', dialogue: [
+                        'Halt! ... Oh, it\'s you. Stay safe out there.',
+                        'The forest is dangerous at night.'
+                    ] },
+                { id: 'mage', x: 33, y: 32, name: 'Mage Orin', color: '#7a5a8e', dialogue: [
+                        'The ancient magic stirs...',
+                        'I sense great power in you. Visit me when you\'re stronger.'
+                    ] },
+            ];
+        }
+
+        // ---- ENEMY DEFINITIONS ----
+        function createEnemies() {
+            const enemies = [];
+            // Forest enemies
+            for (let i = 0; i < 6; i++) {
+                const x = rand(4, 18),
+                    y = rand(4, 18);
+                if (game.map[y] && game.map[y][x] !== T.WALL && game.map[y][x] !== T.HOUSE && game.map[y][x] !== T.WATER) {
+                    enemies.push({
+                        id: 'slime_' + i,
+                        type: 'slime',
+                        x,
+                        y,
+                        hp: 20,
+                        maxHp: 20,
+                        attack: 4,
+                        defense: 1,
+                        speed: 60,
+                        xp: 15,
+                        gold: 5,
+                        aggroRange: 5,
+                        attackCooldown: 0,
+                        hurt: 0,
+                        state: 'idle',
+                        color: '#5f9f6f',
+                        icon: '🟢'
+                    });
+                }
+            }
+            // Dungeon enemies
+            for (let i = 0; i < 8; i++) {
+                const x = rand(44, 54),
+                    y = rand(44, 54);
+                if (game.map[y] && game.map[y][x] !== T.WALL) {
+                    enemies.push({
+                        id: 'skeleton_' + i,
+                        type: 'skeleton',
+                        x,
+                        y,
+                        hp: 35,
+                        maxHp: 35,
+                        attack: 8,
+                        defense: 3,
+                        speed: 50,
+                        xp: 25,
+                        gold: 12,
+                        aggroRange: 6,
+                        attackCooldown: 0,
+                        hurt: 0,
+                        state: 'idle',
+                        color: '#c8b89a',
+                        icon: '💀'
+                    });
+                }
+            }
+            // Castle enemies (stronger)
+            for (let i = 0; i < 4; i++) {
+                const x = rand(46, 56),
+                    y = rand(4, 14);
+                if (game.map[y] && game.map[y][x] !== T.WALL) {
+                    enemies.push({
+                        id: 'knight_' + i,
+                        type: 'knight',
+                        x,
+                        y,
+                        hp: 60,
+                        maxHp: 60,
+                        attack: 12,
+                        defense: 6,
+                        speed: 40,
+                        xp: 40,
+                        gold: 20,
+                        aggroRange: 7,
+                        attackCooldown: 0,
+                        hurt: 0,
+                        state: 'idle',
+                        color: '#8e8eae',
+                        icon: '⚔️'
+                    });
+                }
+            }
+            // Boss - Goblin King in dungeon
+            enemies.push({
+                id: 'boss_goblin_king',
+                type: 'boss',
+                x: 50,
+                y: 50,
+                hp: 120,
+                maxHp: 120,
+                attack: 18,
+                defense: 8,
+                speed: 30,
+                xp: 150,
+                gold: 100,
+                aggroRange: 8,
+                attackCooldown: 0,
+                hurt: 0,
+                state: 'idle',
+                color: '#c84a3a',
+                icon: '👑',
+                isBoss: true
+            });
+            return enemies;
+        }
+
+        // ---- SHOP ITEMS ----
+        function createShopItems() {
+            return [
+                { id: 'health_pot', name: 'Health Potion', icon: '🧪', price: 20, type: 'consumable', heal: 30,
+                    rarity: 'common' },
+                { id: 'mana_pot', name: 'Mana Potion', icon: '💧', price: 20, type: 'consumable', mana: 20,
+                    rarity: 'common' },
+                { id: 'wood_sword', name: 'Wooden Sword', icon: '🗡️', price: 50, type: 'weapon', attack: 4,
+                    rarity: 'common' },
+                { id: 'iron_sword', name: 'Iron Sword', icon: '⚔️', price: 120, type: 'weapon', attack: 9,
+                    rarity: 'uncommon' },
+                { id: 'leather_armor', name: 'Leather Armor', icon: '🛡️', price: 80, type: 'armor', defense: 4,
+                    rarity: 'common' },
+                { id: 'chain_armor', name: 'Chain Armor', icon: '🛡️', price: 180, type: 'armor', defense: 8,
+                    rarity: 'uncommon' },
+                { id: 'ring_of_strength', name: 'Ring of Strength', icon: '💍', price: 100, type: 'accessory', attack: 3,
+                    rarity: 'rare' },
+                { id: 'ring_of_protection', name: 'Ring of Protection', icon: '💍', price: 100, type: 'accessory',
+                    defense: 3, rarity: 'rare' },
+            ];
+        }
+
+        // ---- QUESTS ----
+        function initQuests() {
+            return [
+                { id: 'main_1', title: 'The Goblin King', desc: 'Defeat the Goblin King in the dungeon.',
+                    objective: 'defeat_goblin_king', progress: 0, completed: false, reward: { gold: 100, xp: 150 } },
+                { id: 'side_1', title: 'Forest Cleanup', desc: 'Defeat 5 slimes in the forest.', objective: 'kill_slimes',
+                    progress: 0, target: 5, completed: false, reward: { gold: 30, xp: 40 } },
+                { id: 'side_2', title: 'Dungeon Delver', desc: 'Defeat 5 skeletons in the dungeon.',
+                    objective: 'kill_skeletons', progress: 0, target: 5, completed: false, reward: { gold: 50, xp: 60 } },
+            ];
+        }
+
+        // ---- INIT GAME ----
+        function initGame() {
+            game.map = generateWorld();
+            game.npcs = createNPCs();
+            game.shopItems = createShopItems();
+            game.questLog = initQuests();
+            game.enemies = createEnemies();
+            game.player.x = 30;
+            game.player.y = 30;
+            game.player.inventory = [];
+            game.player.equipped = { weapon: null, armor: null, accessory: null };
+            game.player.quests = [];
+            game.player.completedQuests = [];
+            game.player.gold = 50;
+            game.player.xp = 0;
+            game.player.level = 1;
+            game.player.hp = 100;
+            game.player.maxHp = 100;
+            game.player.mp = 50;
+            game.player.maxMp = 50;
+            game.player.attack = 8;
+            game.player.defense = 3;
+            updatePlayerStats();
+            updateUI();
+            updateMinimap();
+        }
+
+        // ---- PLAYER STATS ----
+        function updatePlayerStats() {
+            const p = game.player;
+            p.maxHp = 100 + (p.level - 1) * 20;
+            p.maxMp = 50 + (p.level - 1) * 10;
+            p.attack = 8 + (p.level - 1) * 2;
+            p.defense = 3 + (p.level - 1) * 1;
+            // Equip bonuses
+            if (p.equipped.weapon) p.attack += p.equipped.weapon.attack || 0;
+            if (p.equipped.armor) p.defense += p.equipped.armor.defense || 0;
+            if (p.equipped.accessory) {
+                p.attack += p.equipped.accessory.attack || 0;
+                p.defense += p.equipped.accessory.defense || 0;
+            }
+            p.hp = Math.min(p.hp, p.maxHp);
+            p.mp = Math.min(p.mp, p.maxMp);
+            p.maxXp = 100 + (p.level - 1) * 50;
+        }
+
+        function gainXP(amount) {
+            const p = game.player;
+            p.xp += amount;
+            while (p.xp >= p.maxXp) {
+                p.xp -= p.maxXp;
+                p.level++;
+                updatePlayerStats();
+                p.hp = p.maxHp;
+                p.mp = p.maxMp;
+                showNotification('🎉 Level Up! You are now level ' + p.level + '!');
+            }
+            updateUI();
+        }
+
+        // ---- NOTIFICATIONS ----
+        let notificationTimeout = null;
+
+        function showNotification(msg) {
+            let el = document.getElementById('game-notification');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'game-notification';
+                el.style.cssText =
+                    'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:50;background:rgba(0,0,0,0.85);padding:16px 28px;border-radius:12px;font-size:18px;font-weight:700;color:#f1c40f;border:2px solid rgba(255,215,0,0.2);pointer-events:none;text-align:center;max-width:80%;transition:opacity 0.3s;font-family:MedievalSharp,cursive;';
+                document.getElementById('ui-overlay').appendChild(el);
+            }
+            el.textContent = msg;
+            el.style.opacity = '1';
+            clearTimeout(notificationTimeout);
+            notificationTimeout = setTimeout(() => { el.style.opacity = '0'; }, 2000);
+        }
+
+        // ---- COMBAT ----
+        function playerAttack() {
+            const p = game.player;
+            if (p.attacking || game.combatCooldown > 0) return;
+            p.attacking = true;
+            game.combatCooldown = 20;
+
+            // Find nearest enemy in range
+            let target = null;
+            let minDist = 2.5;
+            for (const e of game.enemies) {
+                if (e.hp <= 0) continue;
+                const d = dist(p, e);
+                if (d < minDist) {
+                    minDist = d;
+                    target = e;
+                }
+            }
+            if (target) {
+                const dmg = Math.max(1, p.attack - target.defense + rand(-2, 4));
+                target.hp -= dmg;
+                target.hurt = 10;
+                showDamage(target.x, target.y, dmg, '#ff6b6b');
+                if (target.hp <= 0) {
+                    target.hp = 0;
+                    const xpGain = target.xp || 10;
+                    const goldGain = target.gold || 5;
+                    gainXP(xpGain);
+                    p.gold += goldGain;
+                    showNotification('💀 Defeated ' + (target.type || 'enemy') + '! +' + xpGain + ' XP, +' + goldGain +
+                        ' gold');
+                    // Quest progress
+                    checkQuestProgress(target);
+                    // Respawn enemy after delay
+                    setTimeout(() => respawnEnemy(target), 8000);
+                    updateUI();
+                }
+                updateUI();
+            }
+            setTimeout(() => { p.attacking = false; }, 300);
+        }
+
+        function showDamage(x, y, amount, color) {
+            const el = document.createElement('div');
+            el.textContent = '-' + amount;
+            el.style.cssText =
+                'position:absolute;z-index:30;font-size:22px;font-weight:700;color:' + color +
+                ';pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,0.8);transition:all 0.6s ease-out;font-family:MedievalSharp,cursive;';
+            const rect = canvas.getBoundingClientRect();
+            const sx = (x - game.camera.x) * TILE_SIZE / (canvas.width / rect.width);
+            const sy = (y - game.camera.y) * TILE_SIZE / (canvas.height / rect.height);
+            el.style.left = (sx * rect.width / (canvas.width / rect.width)) + 'px';
+            el.style.top = (sy * rect.height / (canvas.height / rect.height)) + 'px';
+            document.getElementById('ui-overlay').appendChild(el);
+            requestAnimationFrame(() => {
+                el.style.transform = 'translateY(-40px)';
+                el.style.opacity = '0';
+            });
+            setTimeout(() => el.remove(), 700);
+        }
+
+        function respawnEnemy(e) {
+            if (e.isBoss) return; // Boss doesn't respawn
+            e.hp = e.maxHp;
+            e.x = rand(4, 18);
+            e.y = rand(4, 18);
+            if (e.type === 'skeleton') { e.x = rand(44, 54);
+                e.y = rand(44, 54); }
+            if (e.type === 'knight') { e.x = rand(46, 56);
+                e.y = rand(4, 14); }
+            e.state = 'idle';
+            e.hurt = 0;
+        }
+
+        function checkQuestProgress(target) {
+            const p = game.player;
+            for (const q of p.quests) {
+                if (q.completed) continue;
+                if (q.objective === 'defeat_goblin_king' && target.isBoss) {
+                    q.progress = 1;
+                    q.completed = true;
+                    completeQuest(q);
+                }
+                if (q.objective === 'kill_slimes' && target.type === 'slime') {
+                    q.progress++;
+                    if (q.progress >= q.target) { q.completed = true;
+                        completeQuest(q); }
+                }
+                if (q.objective === 'kill_skeletons' && target.type === 'skeleton') {
+                    q.progress++;
+                    if (q.progress >= q.target) { q.completed = true;
+                        completeQuest(q); }
+                }
+            }
+        }
+
+        function completeQuest(q) {
+            const p = game.player;
+            p.gold += q.reward.gold || 0;
+            gainXP(q.reward.xp || 0);
+            showNotification('✅ Quest Complete: ' + q.title + '! +' + (q.reward.gold || 0) + ' gold, +' + (q.reward.xp || 0) +
+                ' XP');
+            q.completed = true;
+            updateUI();
+        }
+
+        // ---- ENEMY AI ----
+        function updateEnemies() {
+            const p = game.player;
+            for (const e of game.enemies) {
+                if (e.hp <= 0) continue;
+                if (e.hurt > 0) { e.hurt--; continue; }
+                if (e.attackCooldown > 0) { e.attackCooldown--; }
+
+                const d = dist(p, e);
+                if (d < e.aggroRange) {
+                    e.state = 'chase';
+                    // Move toward player
+                    const dx = p.x - e.x,
+                        dy = p.y - e.y;
+                    const len = Math.hypot(dx, dy) || 1;
+                    const speed = 0.02 * e.speed;
+                    e.x += (dx / len) * speed;
+                    e.y += (dy / len) * speed;
+                    // Attack if close
+                    if (d < 1.5 && e.attackCooldown === 0) {
+                        const dmg = Math.max(1, e.attack - p.defense + rand(-2, 3));
+                        p.hp -= dmg;
+                        p.hurt = true;
+                        e.attackCooldown = 30;
+                        showDamage(p.x, p.y, dmg, '#ff4444');
+                        if (p.hp <= 0) {
+                            p.hp = 0;
+                            showNotification('💀 You have been defeated!');
+                            // Respawn at village
+                            setTimeout(() => {
+                                p.hp = p.maxHp;
+                                p.mp = p.maxMp;
+                                p.x = 30;
+                                p.y = 30;
+                                showNotification('🔄 Respawned at village');
+                            }, 1500);
+                        }
+                        updateUI();
+                    }
+                } else {
+                    e.state = 'idle';
+                    // Random wander
+                    if (Math.random() < 0.002) {
+                        e.x += rand(-1, 1) * 0.1;
+                        e.y += rand(-1, 1) * 0.1;
+                    }
+                }
+                // Keep in bounds
+                e.x = clamp(e.x, 1, WORLD_W - 2);
+                e.y = clamp(e.y, 1, WORLD_H - 2);
+            }
+        }
+
+        // ---- PLAYER MOVEMENT ----
+        function updatePlayer() {
+            const p = game.player;
+            const keys = game.keys;
+            let dx = 0,
+                dy = 0;
+            if (keys['w'] || keys['arrowup']) dy = -1;
+            if (keys['s'] || keys['arrowdown']) dy = 1;
+            if (keys['a'] || keys['arrowleft']) dx = -1;
+            if (keys['d'] || keys['arrowright']) dx = 1;
+            // Touch
+            if (game.touchDir) {
+                if (game.touchDir === 'up') dy = -1;
+                if (game.touchDir === 'down') dy = 1;
+                if (game.touchDir === 'left') dx = -1;
+                if (game.touchDir === 'right') dx = 1;
+            }
+
+            if (dx !== 0 && dy !== 0) {
+                dx *= 0.707;
+                dy *= 0.707;
+            }
+
+            if (dx !== 0 || dy !== 0) {
+                const speed = 0.04 * p.speed;
+                const nx = p.x + dx * speed;
+                const ny = p.y + dy * speed;
+                // Collision with walls and houses
+                const mx = Math.round(nx),
+                    my = Math.round(ny);
+                const tile = game.map[Math.round(p.y)]?.[Math.round(nx)] || T.WALL;
+                const tile2 = game.map[Math.round(ny)]?.[Math.round(p.x)] || T.WALL;
+                const tile3 = game.map[Math.round(ny)]?.[Math.round(nx)] || T.WALL;
+
+                const isWalkable = (t) => t !== T.WALL && t !== T.HOUSE && t !== T.TREE && t !== T.WATER;
+                if (isWalkable(tile) && isWalkable(tile3)) p.x = nx;
+                if (isWalkable(tile2) && isWalkable(tile3)) p.y = ny;
+
+                p.moving = true;
+                if (Math.abs(dx) > Math.abs(dy)) p.dir = dx > 0 ? 3 : 2;
+                else p.dir = dy > 0 ? 0 : 1;
+            } else {
+                p.moving = false;
+            }
+
+            // Clamp
+            p.x = clamp(p.x, 0.5, WORLD_W - 0.5);
+            p.y = clamp(p.y, 0.5, WORLD_H - 0.5);
+        }
+
+        // ---- CAMERA ----
+        function updateCamera() {
+            const p = game.player;
+            const cw = canvas.width,
+                ch = canvas.height;
+            const tw = cw / TILE_SIZE,
+                th = ch / TILE_SIZE;
+            game.camera.x = p.x - tw / 2;
+            game.camera.y = p.y - th / 2;
+            game.camera.x = clamp(game.camera.x, 0, WORLD_W - tw);
+            game.camera.y = clamp(game.camera.y, 0, WORLD_H - th);
+        }
+
+        // ---- RENDER ----
+        function render() {
+            const cw = canvas.width,
+                ch = canvas.height;
+            ctx.clearRect(0, 0, cw, ch);
+
+            const cam = game.camera;
+            const startX = Math.floor(cam.x);
+            const startY = Math.floor(cam.y);
+            const endX = Math.ceil(cam.x + cw / TILE_SIZE) + 1;
+            const endY = Math.ceil(cam.y + ch / TILE_SIZE) + 1;
+
+            // Draw map
+            for (let y = startY; y < endY; y++) {
+                for (let x = startX; x < endX; x++) {
+                    if (x < 0 || x >= WORLD_W || y < 0 || y >= WORLD_H) continue;
+                    const tile = game.map[y]?.[x] ?? T.GRASS;
+                    const sx = (x - cam.x) * TILE_SIZE;
+                    const sy = (y - cam.y) * TILE_SIZE;
+
+                    // Tile colors
+                    let color = '#3d7a3d';
+                    if (tile === T.GRASS) color = '#3d7a3d';
+                    else if (tile === T.DIRT) color = '#7a6a4a';
+                    else if (tile === T.WATER) color = '#2a5f8a';
+                    else if (tile === T.WALL) color = '#5a5a5a';
+                    else if (tile === T.TREE) color = '#2d5a2d';
+                    else if (tile === T.HOUSE) color = '#8a6a4a';
+                    else if (tile === T.STONE) color = '#6a6a6a';
+                    else if (tile === T.PATH) color = '#8a7a5a';
+                    else if (tile === T.BRIDGE) color = '#6a5a3a';
+                    else if (tile === T.CASTLE_FLOOR) color = '#6a6a7a';
+                    else if (tile === T.DUNGEON_FLOOR) color = '#3a3a4a';
+                    else if (tile === T.VILLAGE_FLOOR) color = '#5a7a4a';
+
+                    ctx.fillStyle = color;
+                    ctx.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
+
+                    // Decorations
+                    if (tile === T.TREE) {
+                        ctx.fillStyle = '#1a4a1a';
+                        ctx.beginPath();
+                        ctx.arc(sx + 16, sy + 16, 12, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#3a7a3a';
+                        ctx.beginPath();
+                        ctx.arc(sx + 12, sy + 14, 8, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.arc(sx + 20, sy + 14, 8, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    if (tile === T.HOUSE) {
+                        ctx.fillStyle = '#6a4a2a';
+                        ctx.fillRect(sx + 2, sy + 8, 28, 24);
+                        ctx.fillStyle = '#8a6a4a';
+                        ctx.fillRect(sx + 10, sy + 14, 12, 12);
+                        ctx.fillStyle = '#4a3a2a';
+                        ctx.beginPath();
+                        ctx.moveTo(sx + 0, sy + 8);
+                        ctx.lineTo(sx + 16, sy - 4);
+                        ctx.lineTo(sx + 32, sy + 8);
+                        ctx.fill();
+                    }
+                    if (tile === T.WATER) {
+                        ctx.fillStyle = 'rgba(60,140,200,0.3)';
+                        ctx.fillRect(sx, sy, TILE_SIZE, TILE_SIZE);
+                    }
+                    if (tile === T.BRIDGE) {
+                        ctx.fillStyle = '#7a6a4a';
+                        ctx.fillRect(sx + 2, sy + 12, 28, 8);
+                        ctx.fillStyle = '#5a4a3a';
+                        for (let i = 0; i < 5; i++) {
+                            ctx.fillRect(sx + 4 + i * 6, sy + 10, 2, 12);
+                        }
+                    }
+                    if (tile === T.WALL) {
+                        ctx.fillStyle = '#4a4a4a';
+                        ctx.fillRect(sx + 1, sy + 1, 30, 30);
+                        ctx.fillStyle = '#3a3a3a';
+                        for (let i = 0; i < 3; i++) {
+                            for (let j = 0; j < 3; j++) {
+                                ctx.fillRect(sx + 4 + i * 10, sy + 4 + j * 10, 6, 6);
+                            }
+                        }
+                    }
+                    // Grid lines (subtle)
+                    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(sx, sy, TILE_SIZE, TILE_SIZE);
+                }
+            }
+
+            // Draw enemies
+            for (const e of game.enemies) {
+                if (e.hp <= 0) continue;
+                const sx = (e.x - cam.x) * TILE_SIZE;
+                const sy = (e.y - cam.y) * TILE_SIZE;
+                // Shadow
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.ellipse(sx + 16, sy + 28, 12, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                // Body
+                ctx.fillStyle = e.hurt > 0 ? '#ff4444' : e.color;
+                ctx.beginPath();
+                ctx.arc(sx + 16, sy + 16, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.beginPath();
+                ctx.arc(sx + 12, sy + 12, 4, 0, Math.PI * 2);
+                ctx.fill();
+                // Icon
+                ctx.font = '18px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#fff';
+                ctx.fillText(e.icon || '👾', sx + 16, sy + 16);
+                // HP bar
+                const hpPct = e.hp / e.maxHp;
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillRect(sx + 2, sy - 6, 28, 4);
+                ctx.fillStyle = hpPct > 0.5 ? '#2ecc71' : hpPct > 0.25 ? '#f1c40f' : '#e74c3c';
+                ctx.fillRect(sx + 2, sy - 6, 28 * hpPct, 4);
+                // Boss crown
+                if (e.isBoss) {
+                    ctx.font = '12px sans-serif';
+                    ctx.fillStyle = '#f1c40f';
+                    ctx.fillText('👑', sx + 16, sy - 10);
+                }
+            }
+
+            // Draw NPCs
+            for (const npc of game.npcs) {
+                const sx = (npc.x - cam.x) * TILE_SIZE;
+                const sy = (npc.y - cam.y) * TILE_SIZE;
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.beginPath();
+                ctx.ellipse(sx + 16, sy + 28, 12, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = npc.color || '#7a6a5a';
+                ctx.beginPath();
+                ctx.arc(sx + 16, sy + 16, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                ctx.beginPath();
+                ctx.arc(sx + 12, sy + 12, 4, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.font = '18px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#fff';
+                ctx.fillText('🧙', sx + 16, sy + 16);
+                // Name
+                ctx.font = '8px sans-serif';
+                ctx.fillStyle = '#ddd';
+                ctx.fillText(npc.name, sx + 16, sy + 34);
+                // Shop indicator
+                if (npc.shop) {
+                    ctx.font = '10px sans-serif';
+                    ctx.fillStyle = '#f1c40f';
+                    ctx.fillText('🏪', sx + 28, sy + 6);
+                }
+            }
+
+            // Draw player
+            const p = game.player;
+            const sx = (p.x - cam.x) * TILE_SIZE;
+            const sy = (p.y - cam.y) * TILE_SIZE;
+            // Shadow
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.beginPath();
+            ctx.ellipse(sx + 16, sy + 28, 12, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Body
+            const hurtColor = p.hurt ? '#ff6b6b' : '#4a8ab5';
+            ctx.fillStyle = hurtColor;
+            ctx.beginPath();
+            ctx.arc(sx + 16, sy + 16, 14, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.beginPath();
+            ctx.arc(sx + 12, sy + 12, 4, 0, Math.PI * 2);
+            ctx.fill();
+            // Eyes (direction)
+            ctx.fillStyle = '#fff';
+            let ex1 = 12,
+                ey1 = 12,
+                ex2 = 20,
+                ey2 = 12;
+            if (p.dir === 0) { ey1 = 18;
+                ey2 = 18; }
+            if (p.dir === 1) { ey1 = 6;
+                ey2 = 6; }
+            if (p.dir === 2) { ex1 = 6;
+                ex2 = 14; }
+            if (p.dir === 3) { ex1 = 18;
+                ex2 = 26; }
+            ctx.beginPath();
+            ctx.arc(sx + ex1, sy + ey1, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(sx + ex2, sy + ey2, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#1a2a3a';
+            ctx.beginPath();
+            ctx.arc(sx + ex1 + (p.dir === 3 ? 2 : p.dir === 2 ? -2 : 0), sy + ey1 + (p.dir === 0 ? 2 : p.dir === 1 ? -2 :
+                0), 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(sx + ex2 + (p.dir === 3 ? 2 : p.dir === 2 ? -2 : 0), sy + ey2 + (p.dir === 0 ? 2 : p.dir === 1 ? -2 :
+                0), 2, 0, Math.PI * 2);
+            ctx.fill();
+            // Weapon
+            if (p.equipped.weapon) {
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#ddd';
+                ctx.fillText(p.equipped.weapon.icon || '🗡️', sx + 26, sy + 10);
+            }
+            // Attack animation
+            if (p.attacking) {
+                ctx.strokeStyle = 'rgba(255,200,50,0.6)';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(sx + 16, sy + 16, 24, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.strokeStyle = 'rgba(255,200,50,0.3)';
+                ctx.beginPath();
+                ctx.arc(sx + 16, sy + 16, 32, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // ---- Mini-map ----
+            updateMinimap();
+            // ---- UI ----
+            updateUI();
+        }
+
+        // ---- MINIMAP ----
+        function updateMinimap() {
+            const w = miniCanvas.width,
+                h = miniCanvas.height;
+            miniCtx.clearRect(0, 0, w, h);
+            const scale = w / WORLD_W;
+            // Draw map
+            for (let y = 0; y < WORLD_H; y++) {
+                for (let x = 0; x < WORLD_W; x++) {
+                    const tile = game.map[y]?.[x] ?? T.GRASS;
+                    let color = '#2a4a2a';
+                    if (tile === T.GRASS) color = '#2a4a2a';
+                    else if (tile === T.DIRT) color = '#5a4a3a';
+                    else if (tile === T.WATER) color = '#1a3a5a';
+                    else if (tile === T.WALL) color = '#3a3a3a';
+                    else if (tile === T.TREE) color = '#1a3a1a';
+                    else if (tile === T.HOUSE) color = '#6a4a2a';
+                    else if (tile === T.PATH) color = '#4a4a3a';
+                    else if (tile === T.CASTLE_FLOOR) color = '#4a4a5a';
+                    else if (tile === T.DUNGEON_FLOOR) color = '#2a2a3a';
+                    else if (tile === T.VILLAGE_FLOOR) color = '#3a5a3a';
+                    miniCtx.fillStyle = color;
+                    miniCtx.fillRect(x * scale, y * scale, Math.ceil(scale), Math.ceil(scale));
+                }
+            }
+            // Enemies
+            for (const e of game.enemies) {
+                if (e.hp <= 0) continue;
+                miniCtx.fillStyle = '#ff4444';
+                miniCtx.fillRect(e.x * scale - 1, e.y * scale - 1, 3, 3);
+            }
+            // NPCs
+            for (const npc of game.npcs) {
+                miniCtx.fillStyle = '#44ff44';
+                miniCtx.fillRect(npc.x * scale - 1, npc.y * scale - 1, 3, 3);
+            }
+            // Player
+            miniCtx.fillStyle = '#4af';
+            miniCtx.beginPath();
+            miniCtx.arc(game.player.x * scale, game.player.y * scale, 3, 0, Math.PI * 2);
+            miniCtx.fill();
+            miniCtx.fillStyle = '#fff';
+            miniCtx.beginPath();
+            miniCtx.arc(game.player.x * scale, game.player.y * scale, 1.5, 0, Math.PI * 2);
+            miniCtx.fill();
+        }
+
+        // ---- UI UPDATE ----
+        function updateUI() {
+            const p = game.player;
+            const hpPct = (p.hp / p.maxHp * 100);
+            const mpPct = (p.mp / p.maxMp * 100);
+            const xpPct = (p.xp / p.maxXp * 100);
+            document.getElementById('hp-bar').style.width = hpPct + '%';
+            document.getElementById('hp-text').textContent = Math.floor(p.hp) + '/' + p.maxHp;
+            document.getElementById('mp-bar').style.width = mpPct + '%';
+            document.getElementById('mp-text').textContent = Math.floor(p.mp) + '/' + p.maxMp;
+            document.getElementById('xp-bar').style.width = xpPct + '%';
+            document.getElementById('xp-text').textContent = Math.floor(p.xp) + ' / ' + p.maxXp;
+            document.getElementById('hud-level').textContent = 'Lv.' + p.level;
+            document.getElementById('hud-gold').textContent = p.gold;
+            document.getElementById('inv-gold').textContent = p.gold;
+            document.getElementById('inv-count').textContent = p.inventory.length;
+            // Shop gold
+            const shopGold = document.getElementById('shop-gold');
+            if (shopGold) shopGold.textContent = p.gold;
+            // Stats
+            updateStatsPanel();
+            // Inventory
+            renderInventory();
+            // Quests
+            renderQuests();
+            // Shop
+            renderShop();
+        }
+
+        // ---- STATS PANEL ----
+        function updateStatsPanel() {
+            const p = game.player;
+            const grid = document.getElementById('stat-grid');
+            if (!grid) return;
+            grid.innerHTML = `
+                <div class="stat-row"><span class="label">Level</span><span class="value">${p.level}</span></div>
+                <div class="stat-row"><span class="label">Health</span><span class="value">${Math.floor(p.hp)} / ${p.maxHp}</span></div>
+                <div class="stat-row"><span class="label">Mana</span><span class="value">${Math.floor(p.mp)} / ${p.maxMp}</span></div>
+                <div class="stat-row"><span class="label">Attack</span><span class="value">${p.attack}</span></div>
+                <div class="stat-row"><span class="label">Defense</span><span class="value">${p.defense}</span></div>
+                <div class="stat-row"><span class="label">Gold</span><span class="value text-gold">${p.gold}</span></div>
+                <div class="stat-row"><span class="label">Experience</span><span class="value">${Math.floor(p.xp)} / ${p.maxXp}</span></div>
+                <div class="stat-row"><span class="label">Weapon</span><span class="value">${p.equipped.weapon ? p.equipped.weapon.name : 'None'}</span></div>
+                <div class="stat-row"><span class="label">Armor</span><span class="value">${p.equipped.armor ? p.equipped.armor.name : 'None'}</span></div>
+                <div class="stat-row"><span class="label">Accessory</span><span class="value">${p.equipped.accessory ? p.equipped.accessory.name : 'None'}</span></div>
+                <div class="stat-row"><span class="label">Location</span><span class="value">${p.location || 'Village'}</span></div>
+            `;
+        }
+
+        // ---- INVENTORY ----
+        function renderInventory() {
+            const grid = document.getElementById('inv-grid');
+            if (!grid) return;
+            const p = game.player;
+            grid.innerHTML = '';
+            for (let i = 0; i < p.maxInventory; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'inv-slot';
+                if (i < p.inventory.length) {
+                    const item = p.inventory[i];
+                    slot.classList.add('has-item');
+                    const rarityClass = item.rarity || 'common';
+                    slot.innerHTML = `
+                        <span class="item-icon">${item.icon || '📦'}</span>
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-rarity ${rarityClass}">${rarityClass.charAt(0).toUpperCase()}</span>
+                        ${isEquipped(item) ? '<span class="equip-badge">E</span>' : ''}
+                    `;
+                    slot.addEventListener('click', () => handleInventoryClick(i));
+                    slot.title = item.name + (item.attack ? ' ATK+' + item.attack : '') + (item.defense ? ' DEF+' + item
+                        .defense : '') + (item.heal ? ' Heal+' + item.heal : '');
+                }
+                grid.appendChild(slot);
+            }
+        }
+
+        function isEquipped(item) {
+            const p = game.player;
+            return p.equipped.weapon === item || p.equipped.armor === item || p.equipped.accessory === item;
+        }
+
+        function handleInventoryClick(index) {
+            const p = game.player;
+            const item = p.inventory[index];
+            if (!item) return;
+            // Consumable
+            if (item.type === 'consumable') {
+                if (item.heal) {
+                    p.hp = Math.min(p.maxHp, p.hp + item.heal);
+                    showNotification('💚 +' + item.heal + ' HP');
+                }
+                if (item.mana) {
+                    p.mp = Math.min(p.maxMp, p.mp + item.mana);
+                    showNotification('💙 +' + item.mana + ' MP');
+                }
+                p.inventory.splice(index, 1);
+                updateUI();
+                return;
+            }
+            // Equipment - toggle equip/unequip
+            if (item.type === 'weapon' || item.type === 'armor' || item.type === 'accessory') {
+                const slot = item.type;
+                if (isEquipped(item)) {
+                    // Unequip
+                    p.equipped[slot] = null;
+                    showNotification('Unequipped ' + item.name);
+                } else {
+                    // Unequip current in that slot
+                    if (p.equipped[slot]) {
+                        // Put current back in inventory
+                        p.inventory.push(p.equipped[slot]);
+                    }
+                    p.equipped[slot] = item;
+                    p.inventory.splice(index, 1);
+                    showNotification('Equipped ' + item.name);
+                }
+                updatePlayerStats();
+                updateUI();
+                return;
+            }
+            // Shop sell mode - if shop is open
+            if (document.getElementById('modal-shop').classList.contains('active')) {
+                sellItem(index);
+            }
+        }
+
+        // ---- SELL ITEMS ----
+        function sellItem(index) {
+            const p = game.player;
+            const item = p.inventory[index];
+            if (!item) return;
+            const price = Math.floor((item.price || 10) * 0.5);
+            p.gold += price;
+            p.inventory.splice(index, 1);
+            showNotification('💰 Sold ' + item.name + ' for ' + price + ' gold');
+            updateUI();
+        }
+
+        // ---- QUESTS ----
+        function renderQuests() {
+            const container = document.getElementById('quest-list');
+            if (!container) return;
+            const p = game.player;
+            const allQuests = [...p.quests];
+            // Also show available quests from NPCs
+            const available = game.questLog.filter(q => !p.quests.some(pq => pq.id === q.id) && !p.completedQuests.includes(q
+            .id));
+            container.innerHTML = '';
+            if (allQuests.length === 0 && available.length === 0) {
+                container.innerHTML = '<p style="color:#888;text-align:center;padding:20px;">No quests available. Talk to NPCs!</p>';
+                return;
+            }
+            for (const q of allQuests) {
+                const div = document.createElement('div');
+                div.className = 'quest-entry';
+                div.innerHTML = `
+                    <div class="qtitle">${q.title} ${q.completed ? '✅' : ''}</div>
+                    <div class="qdesc">${q.desc}</div>
+                    <div class="qstatus ${q.completed ? 'complete' : ''}">${q.completed ? 'Complete!' : 'Progress: ' + (q.progress || 0) + (q.target ? '/' + q.target : '')}</div>
+                `;
+                container.appendChild(div);
+            }
+            for (const q of available) {
+                const div = document.createElement('div');
+                div.className = 'quest-entry';
+                div.style.borderLeftColor = '#2ecc71';
+                div.innerHTML = `
+                    <div class="qtitle">📌 ${q.title}</div>
+                    <div class="qdesc">${q.desc}</div>
+                    <div class="qstatus" style="color:#2ecc71;">Available — Talk to the quest giver</div>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // ---- SHOP ----
+        function renderShop() {
+            const grid = document.getElementById('shop-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            for (const item of game.shopItems) {
+                const div = document.createElement('div');
+                div.className = 'shop-item';
+                const rarityClass = item.rarity || 'common';
+                div.innerHTML = `
+                    <div class="icon">${item.icon || '📦'}</div>
+                    <div class="name">${item.name}</div>
+                    <div class="price">🪙 ${item.price}</div>
+                    <div style="font-size:9px;color:#888;">${rarityClass}</div>
+                `;
+                div.addEventListener('click', () => buyItem(item));
+                grid.appendChild(div);
+            }
+        }
+
+        function buyItem(item) {
+            const p = game.player;
+            if (p.gold < item.price) {
+                showNotification('❌ Not enough gold!');
+                return;
+            }
+            if (p.inventory.length >= p.maxInventory) {
+                showNotification('❌ Inventory full!');
+                return;
+            }
+            p.gold -= item.price;
+            p.inventory.push({ ...item });
+            showNotification('🛒 Bought ' + item.name);
+            updateUI();
+        }
+
+        // ---- NPC INTERACTION ----
+        function interactWithNPC(npc) {
+            const modal = document.getElementById('modal-dialogue');
+            document.getElementById('dialogue-speaker').textContent = '💬 ' + npc.name;
+            const textEl = document.getElementById('dialogue-text');
+            const optionsEl = document.getElementById('dialogue-options');
+            optionsEl.innerHTML = '';
+
+            // Show dialogue
+            const dialogueIdx = Math.floor(Math.random() * npc.dialogue.length);
+            textEl.textContent = npc.dialogue[dialogueIdx % npc.dialogue.length];
+
+            // Quest offering
+            const p = game.player;
+            if (npc.quest) {
+                const q = npc.quest;
+                const alreadyHas = p.quests.some(pq => pq.id === q.id);
+                const completed = p.completedQuests.includes(q.id);
+                if (!alreadyHas && !completed) {
+                    const btn = document.createElement('button');
+                    btn.className = 'quest';
+                    btn.textContent = '📜 Accept Quest: ' + q.title;
+                    btn.addEventListener('click', () => {
+                        p.quests.push({ ...q, progress: 0, completed: false });
+                        showNotification('📜 Quest accepted: ' + q.title);
+                        modal.classList.remove('active');
+                        updateUI();
+                    });
+                    optionsEl.appendChild(btn);
+                } else if (completed) {
+                    const btn = document.createElement('button');
+                    btn.textContent = '✅ Quest completed!';
+                    btn.style.color = '#2ecc71';
+                    btn.style.borderColor = '#2ecc71';
+                    btn.addEventListener('click', () => modal.classList.remove('active'));
+                    optionsEl.appendChild(btn);
+                } else {
+                    const btn = document.createElement('button');
+                    btn.textContent = '📜 Quest in progress...';
+                    btn.style.color = '#f1c40f';
+                    btn.addEventListener('click', () => modal.classList.remove('active'));
+                    optionsEl.appendChild(btn);
+                }
+            }
+
+            // Shop
+            if (npc.shop) {
+                const btn = document.createElement('button');
+                btn.className = 'shop';
+                btn.textContent = '🏪 Open Shop';
+                btn.addEventListener('click', () => {
+                    modal.classList.remove('active');
+                    document.getElementById('modal-shop').classList.add('active');
+                    updateUI();
+                });
+                optionsEl.appendChild(btn);
+            }
+
+            // Close
+            const btnClose = document.createElement('button');
+            btnClose.textContent = '👋 Goodbye';
+            btnClose.addEventListener('click', () => modal.classList.remove('active'));
+            optionsEl.appendChild(btnClose);
+
+            modal.classList.add('active');
+        }
+
+        // ---- SAVE / LOAD ----
+        async function saveGame() {
+            const p = game.player;
+            const data = {
+                player: {
+                    x: p.x,
+                    y: p.y,
+                    hp: p.hp,
+                    maxHp: p.maxHp,
+                    mp: p.mp,
+                    maxMp: p.maxMp,
+                    xp: p.xp,
+                    maxXp: p.maxXp,
+                    level: p.level,
+                    gold: p.gold,
+                    attack: p.attack,
+                    defense: p.defense,
+                    inventory: p.inventory,
+                    equipped: p.equipped,
+                    quests: p.quests,
+                    completedQuests: p.completedQuests,
+                    location: p.location,
+                },
+                enemies: game.enemies.map(e => ({ id: e.id, hp: e.hp, x: e.x, y: e.y })),
+                questLog: game.questLog,
+                timestamp: Date.now(),
+            };
+            try {
+                const res = await fetch('/api/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                if (res.ok) {
+                    showNotification('💾 Game saved!');
+                } else {
+                    showNotification('⚠️ Save failed');
+                }
+            } catch (e) {
+                showNotification('⚠️ Save error');
+            }
+        }
+
+        async function loadGame() {
+            try {
+                const res = await fetch('/api/load');
+                if (!res.ok) throw new Error('No save');
+                const data = await res.json();
+                if (!data.player) throw new Error('Invalid save');
+                const p = game.player;
+                const sp = data.player;
+                p.x = sp.x || 30;
+                p.y = sp.y || 30;
+                p.hp = sp.hp || 100;
+                p.maxHp = sp.maxHp || 100;
+                p.mp = sp.mp || 50;
+                p.maxMp = sp.maxMp || 50;
+                p.xp = sp.xp || 0;
+                p.maxXp = sp.maxXp || 100;
+                p.level = sp.level || 1;
+                p.gold = sp.gold || 0;
+                p.attack = sp.attack || 8;
+                p.defense = sp.defense || 3;
+                p.inventory = sp.inventory || [];
+                p.equipped = sp.equipped || { weapon: null, armor: null, accessory: null };
+                p.quests = sp.quests || [];
+                p.completedQuests = sp.completedQuests || [];
+                p.location = sp.location || 'village';
+                // Restore enemies
+                if (data.enemies) {
+                    for (const e of game.enemies) {
+                        const saved = data.enemies.find(s => s.id === e.id);
+                        if (saved) {
+                            e.hp = saved.hp;
+                            e.x = saved.x;
+                            e.y = saved.y;
+                        }
+                    }
+                }
+                if (data.questLog) game.questLog = data.questLog;
+                updatePlayerStats();
+                updateUI();
+                showNotification('📂 Game loaded!');
+            } catch (e) {
+                showNotification('📂 No saved game found, starting fresh');
+            }
+        }
+
+        // ---- AUTO-SAVE ----
+        function autoSave() {
+            saveGame();
+        }
+
+        // ---- GAME LOOP ----
+        let lastTime = 0;
+        let accumulator = 0;
+        const step = 1000 / 60;
+
+        function gameLoop(timestamp) {
+            if (!game.running) return;
+            const delta = timestamp - lastTime;
+            lastTime = timestamp;
+            accumulator += delta;
+
+            while (accumulator >= step) {
+                update(step);
+                accumulator -= step;
+            }
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function update(delta) {
+            const p = game.player;
+            // Player movement
+            updatePlayer();
+            // Enemy AI
+            updateEnemies();
+            // Camera
+            updateCamera();
+            // Cooldowns
+            if (game.combatCooldown > 0) game.combatCooldown--;
+            if (p.hurt) p.hurt = false;
+            // HP/MP regen
+            if (Math.random() < 0.002) {
+                p.hp = Math.min(p.maxHp, p.hp + 1);
+                p.mp = Math.min(p.maxMp, p.mp + 0.5);
+            }
+            // Auto-save timer
+            game.saveTimer += delta / 1000;
+            if (game.saveTimer >= game.autoSaveInterval) {
+                game.saveTimer = 0;
+                autoSave();
+            }
+            // Check location
+            const px = Math.round(p.x),
+                py = Math.round(p.y);
+            const tile = game.map[py]?.[px];
+            if (tile === T.VILLAGE_FLOOR || tile === T.HOUSE) p.location = 'village';
+            else if (tile === T.DUNGEON_FLOOR) p.location = 'dungeon';
+            else if (tile === T.CASTLE_FLOOR) p.location = 'castle';
+            else if (py < 20 && px < 20) p.location = 'forest';
+            else p.location = 'wilderness';
+            // Damage flash
+            if (game.damageFlash > 0) game.damageFlash--;
+            // Update UI periodically
+            updateUI();
+        }
+
+        // ---- RESIZE ----
+        function resizeCanvas() {
+            const wrapper = document.getElementById('game-wrapper');
+            const w = wrapper.clientWidth;
+            const h = wrapper.clientHeight;
+            const dpr = 1;
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            canvas.style.width = w + 'px';
+            canvas.style.height = h + 'px';
+            canvas.getContext('2d').scale(dpr, dpr);
+            // Minimap
+            const mini = document.getElementById('minimap');
+            const mw = mini.clientWidth || 140;
+            const mh = mini.clientHeight || 140;
+            miniCanvas.width = mw;
+            miniCanvas.height = mh;
+            miniCanvas.style.width = mw + 'px';
+            miniCanvas.style.height = mh + 'px';
+        }
+
+        // ---- KEYBOARD ----
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            game.keys[key] = true;
+            if (key === ' ' || key === 'enter') {
+                e.preventDefault();
+                playerAttack();
+            }
+            if (key === 'i') document.getElementById('btn-inventory').click();
+            if (key === 'q') document.getElementById('btn-quests').click();
+            if (key === 'c') document.getElementById('btn-stats').click();
+            if (key === 'escape') {
+                const modal = document.getElementById('modal-pause');
+                modal.classList.toggle('active');
+            }
+            if (key === 'e') {
+                // Interact with nearby NPC
+                const p = game.player;
+                for (const npc of game.npcs) {
+                    if (dist(p, npc) < 2.5) {
+                        interactWithNPC(npc);
+                        break;
+                    }
+                }
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            game.keys[e.key.toLowerCase()] = false;
+        });
+
+        // ---- TOUCH CONTROLS ----
+        document.querySelectorAll('.dpad-btn[data-dir]').forEach(el => {
+            const dir = el.dataset.dir;
+            el.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                game.touchDir = dir;
+                el.classList.add('active');
+            });
+            el.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                if (game.touchDir === dir) game.touchDir = null;
+                el.classList.remove('active');
+            });
+            el.addEventListener('touchcancel', (e) => {
+                game.touchDir = null;
+                el.classList.remove('active');
+            });
+            // Mouse fallback
+            el.addEventListener('mousedown', () => {
+                game.touchDir = dir;
+                el.classList.add('active');
+            });
+            el.addEventListener('mouseup', () => {
+                game.touchDir = null;
+                el.classList.remove('active');
+            });
+            el.addEventListener('mouseleave', () => {
+                if (game.touchDir === dir) game.touchDir = null;
+                el.classList.remove('active');
+            });
+        });
+
+        // ---- UI EVENTS ----
+        // Modal close buttons
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.close;
+                document.getElementById(id).classList.remove('active');
+            });
+        });
+        // Click outside to close
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+
+        // Inventory button
+        document.getElementById('btn-inventory').addEventListener('click', () => {
+            document.getElementById('modal-inventory').classList.toggle('active');
+            updateUI();
+        });
+        // Quests button
+        document.getElementById('btn-quests').addEventListener('click', () => {
+            document.getElementById('modal-quests').classList.toggle('active');
+            renderQuests();
+        });
+        // Stats button
+        document.getElementById('btn-stats').addEventListener('click', () => {
+            document.getElementById('modal-stats').classList.toggle('active');
+            updateStatsPanel();
+        });
+        // Save button
+        document.getElementById('btn-save').addEventListener('click', saveGame);
+        // Shop sell button
+        document.getElementById('btn-shop-sell')?.addEventListener('click', () => {
+            const p = game.player;
+            if (p.inventory.length === 0) {
+                showNotification('No items to sell');
+                return;
+            }
+            // Simple: sell all non-equipped items one by one
+            const toSell = [...p.inventory];
+            for (const item of toSell) {
+                if (!isEquipped(item)) {
+                    const idx = p.inventory.indexOf(item);
+                    if (idx !== -1) {
+                        const price = Math.floor((item.price || 10) * 0.5);
+                        p.gold += price;
+                        p.inventory.splice(idx, 1);
+                    }
+                }
+            }
+            showNotification('💰 Sold all sellable items!');
+            updateUI();
+        });
+
+        // ---- CLICK ON CANVAS FOR INTERACTION ----
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = (e.clientX - rect.left) / rect.width;
+            const my = (e.clientY - rect.top) / rect.height;
+            const cx = game.camera.x + mx * (canvas.width / TILE_SIZE);
+            const cy = game.camera.y + my * (canvas.height / TILE_SIZE);
+            // Check if clicked on NPC
+            for (const npc of game.npcs) {
+                if (dist({ x: cx, y: cy }, npc) < 0.8) {
+                    interactWithNPC(npc);
+                    return;
+                }
+            }
+            // Check if clicked on enemy (attack)
+            for (const e of game.enemies) {
+                if (e.hp <= 0) continue;
+                if (dist({ x: cx, y: cy }, e) < 0.8) {
+                    playerAttack();
+                    return;
+                }
+            }
+            // Move toward click (optional)
+        });
+
+        // ---- KEYBOARD SHORTCUT FOR ATTACK ----
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                playerAttack();
+            }
+            // Interact with E
+            if (e.key === 'e' || e.key === 'E') {
+                const p = game.player;
+                for (const npc of game.npcs) {
+                    if (dist(p, npc) < 2.5) {
+                        interactWithNPC(npc);
+                        break;
+                    }
+                }
+            }
+        });
+
+        // ---- INIT ----
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            // Load saved game or start fresh
+            loadGame().then(() => {
+                // If no save, init fresh
+                if (game.player.inventory.length === 0 && game.player.gold === 0) {
+                    initGame();
+                }
+                // Start loop
+                lastTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            }).catch(() => {
+                initGame();
+                lastTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            });
+        }
+
+        // ---- START ----
+        init();
+
+        console.log('⚔️ ShadowQuest RPG loaded!');
+        console.log('🎮 Controls: WASD/Arrows move | Space/Enter attack | E interact');
+        console.log('📱 Touch controls available on mobile');
+        console.log('💾 Auto-save every 30 seconds');
+    </script>
+
+</body>
+</html>
