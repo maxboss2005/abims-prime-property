@@ -29,6 +29,7 @@
                     <li><a href="#features">Why Us</a></li>
                     <li><a href="#properties">Properties</a></li>
                     <li><a href="#cleaning">Cleaning</a></li>
+                    <li><a href="#before-after">Before & After</a></li>
                     <li><a href="#video">Video Tour</a></li>
                     <li><a href="#contact" class="nav-cta">Contact</a></li>
                 </ul>
@@ -600,6 +601,189 @@
         </div>
     </section>
 
+    <!-- ========================================================= -->
+    <!-- ===== 🔥 NEW: BEFORE & AFTER VIDEO COMPARISON ===== -->
+    <!-- ========================================================= -->
+    <section class="before-after-section" id="before-after" data-aos="fade-up">
+        <div class="container">
+            <h2 class="section-title">Before &amp; After <span style="color:var(--secondary);">Video Comparison</span></h2>
+            <p class="section-subtitle">See the transformation — watch our properties come to life from renovation to completion</p>
+
+            <!-- Filter Tabs -->
+            <div class="ba-tabs" data-aos="fade-up" data-aos-delay="100">
+                <button class="ba-tab active" data-project="0">Solace City</button>
+                <button class="ba-tab" data-project="1">Celebration Villa</button>
+                <button class="ba-tab" data-project="2">MKH City</button>
+                <button class="ba-tab" data-project="3">Bluestone Estate</button>
+            </div>
+
+            <!-- Before/After Slider Container -->
+            <div class="ba-slider-wrapper" data-aos="fade-up" data-aos-delay="200">
+                <div class="ba-slider-container" id="baSliderContainer">
+
+                    <!-- Project 0: Solace City -->
+                    <div class="ba-slide active" data-project="0">
+                        <div class="ba-slider">
+                            <div class="ba-slider-inner">
+                                <!-- AFTER video (right / bottom layer) -->
+                                <div class="ba-after">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <div class="ba-label after-label"><i class="fas fa-check-circle"></i> After</div>
+                                </div>
+                                <!-- BEFORE video (left / top layer with clip) -->
+                                <div class="ba-before" style="clip-path: inset(0 50% 0 0);">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <div class="ba-label before-label"><i class="fas fa-clock"></i> Before</div>
+                                </div>
+                                <!-- Drag handle -->
+                                <div class="ba-handle" id="baHandle0">
+                                    <div class="ba-handle-line"></div>
+                                    <div class="ba-handle-circle">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Controls -->
+                            <div class="ba-controls">
+                                <button class="ba-play-btn" onclick="toggleBAPlay(this)" aria-label="Play/Pause">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <span class="ba-hint">Drag the handle to compare</span>
+                                <span class="ba-percent" id="baPercent0">50%</span>
+                            </div>
+                        </div>
+                        <div class="ba-desc">
+                            <h3>Solace City Bungalow Phase Two</h3>
+                            <p>Watch the transformation from foundation to a stunning 4-bedroom bungalow with BQ in Elerengbe, Ibeju-Lekki.</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 1: Celebration Villa -->
+                    <div class="ba-slide" data-project="1">
+                        <div class="ba-slider">
+                            <div class="ba-slider-inner">
+                                <div class="ba-after">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                    </video>
+                                    <div class="ba-label after-label"><i class="fas fa-check-circle"></i> After</div>
+                                </div>
+                                <div class="ba-before" style="clip-path: inset(0 50% 0 0);">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                    </video>
+                                    <div class="ba-label before-label"><i class="fas fa-clock"></i> Before</div>
+                                </div>
+                                <div class="ba-handle" id="baHandle1">
+                                    <div class="ba-handle-line"></div>
+                                    <div class="ba-handle-circle">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ba-controls">
+                                <button class="ba-play-btn" onclick="toggleBAPlay(this)" aria-label="Play/Pause">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <span class="ba-hint">Drag the handle to compare</span>
+                                <span class="ba-percent" id="baPercent1">50%</span>
+                            </div>
+                        </div>
+                        <div class="ba-desc">
+                            <h3>Celebration Green Villa</h3>
+                            <p>From bare land to a luxurious 3-bed fully detached bungalow with BQ in Idera Scheme, Eleko, Ibeju-Lekki.</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 2: MKH City -->
+                    <div class="ba-slide" data-project="2">
+                        <div class="ba-slider">
+                            <div class="ba-slider-inner">
+                                <div class="ba-after">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                    </video>
+                                    <div class="ba-label after-label"><i class="fas fa-check-circle"></i> After</div>
+                                </div>
+                                <div class="ba-before" style="clip-path: inset(0 50% 0 0);">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                    </video>
+                                    <div class="ba-label before-label"><i class="fas fa-clock"></i> Before</div>
+                                </div>
+                                <div class="ba-handle" id="baHandle2">
+                                    <div class="ba-handle-line"></div>
+                                    <div class="ba-handle-circle">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ba-controls">
+                                <button class="ba-play-btn" onclick="toggleBAPlay(this)" aria-label="Play/Pause">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <span class="ba-hint">Drag the handle to compare</span>
+                                <span class="ba-percent" id="baPercent2">50%</span>
+                            </div>
+                        </div>
+                        <div class="ba-desc">
+                            <h3>MKH City</h3>
+                            <p>See the evolution of this premium estate in Olunde Scheme, Academy, Ibadan — from concept to stunning homes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Project 3: Bluestone Estate -->
+                    <div class="ba-slide" data-project="3">
+                        <div class="ba-slider">
+                            <div class="ba-slider-inner">
+                                <div class="ba-after">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                    </video>
+                                    <div class="ba-label after-label"><i class="fas fa-check-circle"></i> After</div>
+                                </div>
+                                <div class="ba-before" style="clip-path: inset(0 50% 0 0);">
+                                    <video class="ba-video" muted loop playsinline poster="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=450&fit=crop">
+                                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                                    </video>
+                                    <div class="ba-label before-label"><i class="fas fa-clock"></i> Before</div>
+                                </div>
+                                <div class="ba-handle" id="baHandle3">
+                                    <div class="ba-handle-line"></div>
+                                    <div class="ba-handle-circle">
+                                        <i class="fas fa-arrows-alt-h"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ba-controls">
+                                <button class="ba-play-btn" onclick="toggleBAPlay(this)" aria-label="Play/Pause">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <span class="ba-hint">Drag the handle to compare</span>
+                                <span class="ba-percent" id="baPercent3">50%</span>
+                            </div>
+                        </div>
+                        <div class="ba-desc">
+                            <h3>Bluestone Treasure Estate Phase 1</h3>
+                            <p>Watch the transformation of this sought-after estate in Mowetown, Lagos — from raw land to executive homes.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-top:2rem;color:var(--gray);font-size:0.9rem;">
+                <i class="fas fa-info-circle"></i> Hover over the video and use the slider handle to compare Before &amp; After. Click play to watch the transformation.
+            </div>
+        </div>
+    </section>
+
     <!-- ===== VIDEO SECTION ===== -->
     <section class="video-section" id="video" style="background:var(--dark);color:white;padding:4rem 0;text-align:center;">
         <div class="container">
@@ -728,6 +912,7 @@
                         <li><a href="#features">Why Choose Us</a></li>
                         <li><a href="#properties">Properties</a></li>
                         <li><a href="#cleaning">Cleaning Services</a></li>
+                        <li><a href="#before-after">Before & After</a></li>
                         <li><a href="#video">Video Tour</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
@@ -819,5 +1004,163 @@
     <!-- ===== AOS ===== -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="script.js"></script>
+
+    <!-- ===== INLINE BEFORE/AFTER SCRIPTS ===== -->
+    <script>
+        // ===== BEFORE/AFTER SLIDER ENGINE =====
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Tab switching ---
+            const tabs = document.querySelectorAll('.ba-tab');
+            const slides = document.querySelectorAll('.ba-slide');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const project = this.dataset.project;
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    slides.forEach(s => {
+                        s.classList.toggle('active', s.dataset.project === project);
+                    });
+                    // Re-init handles after tab change
+                    setTimeout(initAllHandles, 100);
+                });
+            });
+
+            // --- Handle dragging for each slider ---
+            function initAllHandles() {
+                const containers = document.querySelectorAll('.ba-slider-inner');
+                containers.forEach((container, idx) => {
+                    const handle = container.querySelector('.ba-handle');
+                    const before = container.querySelector('.ba-before');
+                    const percentSpan = document.getElementById('baPercent' + idx);
+                    if (!handle || !before) return;
+
+                    let isDragging = false;
+                    const slider = container.closest('.ba-slider');
+
+                    function updateSlider(e) {
+                        const rect = slider.getBoundingClientRect();
+                        const x = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+                        let percent = Math.min(Math.max((x / rect.width) * 100, 5), 95);
+                        before.style.clipPath = 'inset(0 ' + (100 - percent) + '% 0 0)';
+                        if (percentSpan) percentSpan.textContent = Math.round(percent) + '%';
+                        // Move handle
+                        handle.style.left = percent + '%';
+                    }
+
+                    function startDrag(e) {
+                        isDragging = true;
+                        handle.classList.add('dragging');
+                        e.preventDefault();
+                    }
+
+                    function endDrag() {
+                        isDragging = false;
+                        handle.classList.remove('dragging');
+                    }
+
+                    function moveDrag(e) {
+                        if (!isDragging) return;
+                        updateSlider(e);
+                        e.preventDefault();
+                    }
+
+                    // Mouse events
+                    handle.addEventListener('mousedown', startDrag);
+                    document.addEventListener('mousemove', moveDrag);
+                    document.addEventListener('mouseup', endDrag);
+
+                    // Touch events
+                    handle.addEventListener('touchstart', startDrag, { passive: false });
+                    document.addEventListener('touchmove', moveDrag, { passive: false });
+                    document.addEventListener('touchend', endDrag);
+
+                    // Click on slider to jump
+                    slider.addEventListener('click', function(e) {
+                        if (e.target.closest('.ba-handle') || e.target.closest('.ba-controls') || e.target
+                            .closest('.ba-play-btn')) return;
+                        updateSlider(e);
+                    });
+
+                    // Set initial position
+                    setTimeout(() => {
+                        const rect = slider.getBoundingClientRect();
+                        if (rect.width > 0) {
+                            updateSlider({ clientX: rect.left + rect.width * 0.5 });
+                        }
+                    }, 100);
+
+                    // Store cleanup
+                    container._baCleanup = function() {
+                        document.removeEventListener('mousemove', moveDrag);
+                        document.removeEventListener('mouseup', endDrag);
+                        document.removeEventListener('touchmove', moveDrag);
+                        document.removeEventListener('touchend', endDrag);
+                    };
+                });
+            }
+
+            // --- Video play/pause toggle ---
+            window.toggleBAPlay = function(btn) {
+                const slider = btn.closest('.ba-slider');
+                const videos = slider.querySelectorAll('.ba-video');
+                const icon = btn.querySelector('i');
+
+                if (icon.classList.contains('fa-play')) {
+                    videos.forEach(v => {
+                        v.play().catch(() => {});
+                        v.muted = false;
+                    });
+                    icon.className = 'fas fa-pause';
+                    btn.classList.add('playing');
+                } else {
+                    videos.forEach(v => {
+                        v.pause();
+                    });
+                    icon.className = 'fas fa-play';
+                    btn.classList.remove('playing');
+                }
+            };
+
+            // --- Auto-play videos when visible (muted initially) ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const videos = entry.target.querySelectorAll('.ba-video');
+                        videos.forEach(v => {
+                            v.play().catch(() => {});
+                        });
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            document.querySelectorAll('.ba-slider').forEach(slider => {
+                observer.observe(slider);
+            });
+
+            // Init handles after load
+            window.addEventListener('load', function() {
+                setTimeout(initAllHandles, 300);
+            });
+
+            // Also init after AOS animations complete
+            document.addEventListener('aos:in', function() {
+                setTimeout(initAllHandles, 200);
+            });
+
+            // Re-init on resize
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(initAllHandles, 200);
+            });
+
+            // Expose init for debugging
+            window.initBA = initAllHandles;
+
+        });
+    </script>
+
 </body>
 </html>
